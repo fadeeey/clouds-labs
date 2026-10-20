@@ -1,0 +1,144 @@
+name: ЛР-03* · rollback
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  rollback:
+    name: Deploy failure and restore pinned release
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      packages: write
+    env:
+      GOOD_BACKEND: ghcr.io/fadeeey/clouds-labs/backend@sha256:5a0d75d27bb81e37b909c21d69f25d3ee4fdaa17ec1313fbe8e68245d8f31814
+      GOOD_FRONTEND: ghcr.io/fadeeey/clouds-labs/frontend@sha256:0e5da13191b2fcb1af6e49106b41fb02d57bc9b2366f99619529098c7b69c1bb
+      SCANNER: ghcr.io/aquasecurity/trivy:0.74.0@sha256:62b1e65e8869bc4b4c6aa4fa2b21595256c7c2f6018a9d9ad61caf87187c1969
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Login and pull the known good registry release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "::add-mask::$GH_TOKEN"
+          printf '%s' "$GH_TOKEN" | docker login ghcr.io --username "$GITHUB_ACTOR" --password-stdin
+          docker pull "$GOOD_BACKEND"
+          docker pull "$GOOD_FRONTEND"
+      - name: Build a reproducibly broken frontend release
+        env:
+          BROKEN_TAG: ghcr.io/${{ github.repository }}/frontend:lab03star-${{ github.sha }}
+        run: |
+          set -euo pipefail
+          docker buildx build --progress=plain --platform linux/arm64 --load \
+            -f docker/lab-03-star/Dockerfile.frontend-broken -t "$BROKEN_TAG" .
+          docker image inspect "$BROKEN_TAG" --format 'Built {{.RepoTags}} {{.Id}} {{.Os}}/{{.Architecture}}'
+          echo "Broken fixture source revision: $GITHUB_SHA"
+      - name: Scan all images and block Critical findings
+        env:
+          BROKEN_TAG: ghcr.io/${{ github.repository }}/frontend:lab03star-${{ github.sha }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/trivy-cache" "$RUNNER_TEMP/scan"
+          for item in "good-backend:$GOOD_BACKEND" "good-frontend:$GOOD_FRONTEND" "broken-frontend:$BROKEN_TAG"; do
+            name=${item%%:*}
+            image=${item#*:}
+            docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
+              -v "$RUNNER_TEMP/trivy-cache:/root/.cache/trivy" \
+              -v "$RUNNER_TEMP/scan:/scan" "$SCANNER" image --scanners vuln \
+              --severity HIGH,CRITICAL --format json --output "/scan/$name.json" "$image"
+            python scripts/lab-03/summarize_scan.py "/scan/$name.json" "$image" >> "$GITHUB_STEP_SUMMARY"
+            docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
+              -v "$RUNNER_TEMP/trivy-cache:/root/.cache/trivy" "$SCANNER" image \
+              --scanners vuln --severity CRITICAL --exit-code 1 "$image"
+          done
+      - name: Publish and pull the broken image by registry digest
+        id: broken
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BROKEN_TAG: ghcr.io/${{ github.repository }}/frontend:lab03star-${{ github.sha }}
+        run: |
+          set -euo pipefail
+          echo "::add-mask::$GH_TOKEN"
+          printf '%s' "$GH_TOKEN" | docker login ghcr.io --username "$GITHUB_ACTOR" --password-stdin
+          docker push "$BROKEN_TAG" 2>&1 | tee "$RUNNER_TEMP/push-broken.log"
+          digest=$(python -c 'import re,sys; print(re.findall(r"digest: (sha256:[0-9a-f]{64})", open(sys.argv[1]).read())[-1])' "$RUNNER_TEMP/push-broken.log")
+          test -n "$digest"
+          broken_image="ghcr.io/${GITHUB_REPOSITORY}/frontend@$digest"
+          docker pull "$broken_image"
+          echo "image=$broken_image" >> "$GITHUB_OUTPUT"
+          echo "Broken registry manifest: $broken_image" >> "$GITHUB_STEP_SUMMARY"
+      - name: Deploy, observe failure and roll back once
+        env:
+          BROKEN_FRONTEND: ${{ steps.broken.outputs.image }}
+          DEPLOY_PROJECT: lab03star-${{ github.run_id }}-${{ github.run_attempt }}
+        run: |
+          set -euo pipefail
+          compose=(docker compose --project-name "$DEPLOY_PROJECT" -f docker/lab-03/compose.deploy.yaml)
+          good_env="$RUNNER_TEMP/lab03star-good.env"
+          broken_env="$RUNNER_TEMP/lab03star-broken.env"
+          rollback_env="$RUNNER_TEMP/lab03star-rollback.env"
+          trap '"${compose[@]}" --env-file "$good_env" down --volumes --remove-orphans >/dev/null 2>&1 || true; docker logout ghcr.io >/dev/null 2>&1 || true; rm -f "$good_env" "$broken_env" "$rollback_env"' EXIT
+          umask 077
+          POSTGRES_PASSWORD=$(openssl rand -hex 24)
+          printf 'BACKEND_IMAGE=%s\nFRONTEND_IMAGE=%s\nPOSTGRES_PASSWORD=%s\n' "$GOOD_BACKEND" "$GOOD_FRONTEND" "$POSTGRES_PASSWORD" > "$good_env"
+          printf 'BACKEND_IMAGE=%s\nFRONTEND_IMAGE=%s\nPOSTGRES_PASSWORD=%s\n' "$GOOD_BACKEND" "$BROKEN_FRONTEND" "$POSTGRES_PASSWORD" > "$broken_env"
+          cp "$good_env" "$rollback_env"
+
+          "${compose[@]}" --env-file "$good_env" up -d --no-build --wait --wait-timeout 90
+          curl --fail --silent --show-error --retry 20 --retry-delay 1 --retry-all-errors http://127.0.0.1:18080/healthz
+          marker="rollback-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          payload=$(python -c 'import json,sys; print(json.dumps({"title":sys.argv[1]}))' "$marker")
+          created=$(curl --fail --silent --show-error -H 'Content-Type: application/json' -d "$payload" http://127.0.0.1:18080/api/tasks)
+          task_id=$(python -c 'import json,sys; print(json.loads(sys.argv[1])["id"])' "$created")
+          test -n "$task_id"
+          volume_before=$(docker volume inspect "${DEPLOY_PROJECT}_postgres_data" --format '{{.Name}} {{.CreatedAt}}')
+          backend_before=$("${compose[@]}" --env-file "$good_env" ps -q backend)
+          db_before=$("${compose[@]}" --env-file "$good_env" ps -q db)
+          echo "Baseline release healthy; control task id=$task_id; database volume=$volume_before"
+
+          "${compose[@]}" --env-file "$broken_env" up -d --no-deps --no-build frontend
+          broken_status=$(curl --silent --show-error --output "$RUNNER_TEMP/broken-response.txt" --write-out '%{http_code}' --max-time 10 http://127.0.0.1:18080/healthz || true)
+          test "$broken_status" = 503
+          frontend_id=$("${compose[@]}" --env-file "$broken_env" ps -q frontend)
+          for attempt in $(seq 1 15); do
+            frontend_health=$(docker inspect "$frontend_id" --format '{{.State.Health.Status}}')
+            test "$frontend_health" = unhealthy && break
+            sleep 1
+          done
+          test "$frontend_health" = unhealthy
+          test "$("${compose[@]}" --env-file "$broken_env" ps -q backend)" = "$backend_before"
+          test "$("${compose[@]}" --env-file "$broken_env" ps -q db)" = "$db_before"
+          volume_during=$(docker volume inspect "${DEPLOY_PROJECT}_postgres_data" --format '{{.Name}} {{.CreatedAt}}')
+          test "$volume_during" = "$volume_before"
+          echo "Broken release observed: HTTP $broken_status; frontend health=$frontend_health; backend, DB and volume unchanged."
+
+          rollback_started=$(python -c 'import time; print(time.time_ns())')
+          rollback_started_utc=$(date -u +%FT%TZ)
+          "${compose[@]}" --env-file "$rollback_env" up -d --no-deps --no-build frontend
+          curl --fail --silent --show-error --retry 30 --retry-delay 1 --retry-all-errors http://127.0.0.1:18080/healthz
+          listed=$(curl --fail --silent --show-error http://127.0.0.1:18080/api/tasks)
+          python -c 'import json,sys; task_id=int(sys.argv[1]); marker=sys.argv[2]; rows=json.loads(sys.argv[3]); assert any(row["id"] == task_id and row["title"] == marker for row in rows); print("Rollback restored health and control task", task_id, marker)' "$task_id" "$marker" "$listed"
+          rollback_finished=$(python -c 'import time; print(time.time_ns())')
+          rollback_finished_utc=$(date -u +%FT%TZ)
+          test "$("${compose[@]}" --env-file "$rollback_env" ps -q backend)" = "$backend_before"
+          test "$("${compose[@]}" --env-file "$rollback_env" ps -q db)" = "$db_before"
+          volume_after=$(docker volume inspect "${DEPLOY_PROJECT}_postgres_data" --format '{{.Name}} {{.CreatedAt}}')
+          test "$volume_after" = "$volume_before"
+          python -c 'import sys; elapsed=(int(sys.argv[2])-int(sys.argv[1]))/1e9; print(f"Measured rollback-to-health-and-record time: {elapsed:.3f} seconds")' "$rollback_started" "$rollback_finished" | tee "$RUNNER_TEMP/rollback-time.txt"
+          {
+            echo "## Lab 3* rollback"
+            echo "Good backend/frontend were pulled by the exact registry manifest digests from Lab 3 run 39496839618. The controlled frontend release was scanned, published, then pulled by its manifest digest."
+            echo "- Observed broken release response: HTTP $broken_status; frontend health: $frontend_health."
+            echo "- Backend and PostgreSQL container IDs and the named database volume remained unchanged across the failed release and rollback."
+            echo "- Control task id: $task_id; its same title was present after recovery."
+            echo "- Rollback interval UTC: $rollback_started_utc to $rollback_finished_utc."
+            cat "$RUNNER_TEMP/rollback-time.txt"
+            echo "- Cleanup removes only this hosted job's Compose project and disposable volume."
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Remove registry credentials from runner
+        if: always()
+        run: docker logout ghcr.io || true

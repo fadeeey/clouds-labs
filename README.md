@@ -53,7 +53,7 @@ flowchart LR
 | ЛР1 | Nginx и два backend | Проверено локально | Не отправлено |
 | ЛР1* | Проверка конфигурации Nginx | Проверено локально | Не отправлено |
 | ЛР3 | CI/CD | Проверено локально и в GitHub Actions | Не отправлено |
-| ЛР3* | Rollback | Не начата | Не отправлено |
+| ЛР3* | Rollback | В работе | Не отправлено |
 
 Облачный трек отдельный и выполняется во второй половине семестра; сейчас он вне объёма.
 
@@ -89,4 +89,8 @@ flowchart LR
 ## Лаба 3
 
 - [Отчёт ЛР3](labs/lab-03/report.md) — hosted CI, приватный GHCR, сканирование обоих образов, реальный deploy smoke test и негативные gates.
-- [Успешный run](https://github.com/fadeeey/clouds-labs/actions/runs/39495550006); workflow-run временный, преподавателю не отправлено.
+- [Успешный run](https://github.com/fadeeey/clouds-labs/actions/runs/39496839618); workflow-run временный, преподавателю не отправлено.
+
+## Лаба 3*
+
+- [Отчёт ЛР3*](labs/lab-03-star/report.md) — один hosted run с публикацией, контролируемым отказом frontend и откатом.
