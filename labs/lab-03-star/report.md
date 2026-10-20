@@ -14,4 +14,6 @@
 
 Первый hosted run [#39498264183](https://github.com/fadeeey/clouds-labs/actions/runs/39498264183) завершился до публикации и deploy: Python summary script не нашёл JSON Trivy по ошибочному host-пути `/scan/good-backend.json`. Вывод сканера находился в `$RUNNER_TEMP/scan`; workflow исправлен читать файл именно из этого смонтированного каталога.
 
+Второй run [#39498491812](https://github.com/fadeeey/clouds-labs/actions/runs/39498491812) прошёл Critical scan и publish/pull broken image, поднял baseline и сохранил задачу, но запрос к frontend сразу после пересоздания получил `curl: (52) Empty reply from server`. Добавлен bounded retry только для получения ожидаемого HTTP 503; пока это наблюдение не засчитывается как подтверждённое startup race.
+
 Digest broken release, итоговые Trivy counts, HTTP/health наблюдения, сохранение контрольной записи и измеренное время восстановления пока непроверены.

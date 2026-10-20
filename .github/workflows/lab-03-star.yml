@@ -101,7 +101,7 @@ jobs:
           echo "Baseline release healthy; control task id=$task_id; database volume=$volume_before"
 
           "${compose[@]}" --env-file "$broken_env" up -d --no-deps --no-build frontend
-          broken_status=$(curl --silent --show-error --output "$RUNNER_TEMP/broken-response.txt" --write-out '%{http_code}' --max-time 10 http://127.0.0.1:18080/healthz || true)
+          broken_status=$(curl --silent --show-error --output "$RUNNER_TEMP/broken-response.txt" --write-out '%{http_code}' --max-time 5 --retry 15 --retry-delay 1 --retry-all-errors http://127.0.0.1:18080/healthz || true)
           test "$broken_status" = 503
           frontend_id=$("${compose[@]}" --env-file "$broken_env" ps -q frontend)
           for attempt in $(seq 1 15); do
