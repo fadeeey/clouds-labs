@@ -12,6 +12,13 @@ if not DATABASE_URL:
     raise RuntimeError("DATABASE_URL is required; see .env.example")
 
 app = Flask(__name__, static_folder=None)
+BACKEND_ID = os.environ.get("BACKEND_ID", "backend-1")
+
+
+@app.after_request
+def identify_backend(response):
+    response.headers["X-Backend-ID"] = BACKEND_ID
+    return response
 
 
 def connect():

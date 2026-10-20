@@ -1,0 +1,30 @@
+ЛР1, локальная проверка на macOS с Docker Desktop
+Дата проверки/фиксации результатов: 2026-10-20 (локальная машина, MSK). Время каждого запроса отдельно не сохранялось.
+Команда: ./scripts/lab-01-check.sh
+
+1. HTTP redirects to HTTPS:
+HTTP/1.1 301 Moved Permanently
+Location: https://127.0.0.1:8443/
+
+2. Both backend IDs appear behind /api:
+backend-1
+backend-2
+
+3. Alias and virtual hosts:
+https://app.local:8443/docs/lab-notes.txt -> HTTP 200
+https://companion.local:8443/missing-page -> HTTP 404
+
+4. Custom 404 and basic auth:
+https://app.local:8443/missing-page -> HTTP 404
+https://app.local:8443/admin -> HTTP 401
+https://app.local:8443/admin -> HTTP 200
+
+5. Rate limit returns 429 under a short burst:
+HTTP 429 responses: 20 / 24
+
+6. Stop one backend, API remains available:
+https://app.local:8443/api/tasks -> HTTP 200
+Live backend after stop: backend-1
+backend2 was started again and returned to healthy.
+
+The private admin password and TLS private key are not recorded here.

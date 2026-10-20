@@ -41,6 +41,24 @@ services:
       - frontend
       - database
 
+  backend2:
+    image: clouds-lab-backend:local
+    build:
+      context: .
+      dockerfile: docker/lab-02/Dockerfile.good
+    environment:
+      DATABASE_URL: postgresql://tasks:${POSTGRES_PASSWORD:?Copy .env.example to .env and set POSTGRES_PASSWORD}@db:5432/tasks
+      BACKEND_ID: backend-2
+    depends_on:
+      db:
+        condition: service_healthy
+    cpus: 0.50
+    mem_limit: 128m
+    restart: unless-stopped
+    networks:
+      - frontend
+      - database
+
   frontend:
     image: clouds-lab-frontend:local
     build:
@@ -49,16 +67,23 @@ services:
     depends_on:
       backend:
         condition: service_healthy
+      backend2:
+        condition: service_healthy
     cpus: 0.25
     mem_limit: 64m
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1/healthz || exit 1"]
+      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1:8081/healthz || exit 1"]
       interval: 10s
       timeout: 3s
       retries: 5
     ports:
       - "127.0.0.1:8080:80"
+      - "127.0.0.1:8443:443"
+    volumes:
+      - ./.local/nginx/tls.crt:/etc/nginx/certs/tls.crt:ro
+      - ./.local/nginx/tls.key:/etc/nginx/certs/tls.key:ro
+      - ./.local/nginx/.htpasswd:/etc/nginx/auth/.htpasswd:ro
     networks:
       - frontend
 
