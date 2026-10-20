@@ -50,7 +50,7 @@ jobs:
               -v "$RUNNER_TEMP/trivy-cache:/root/.cache/trivy" \
               -v "$RUNNER_TEMP/scan:/scan" "$SCANNER" image --scanners vuln \
               --severity HIGH,CRITICAL --format json --output "/scan/$name.json" "$image"
-            python scripts/lab-03/summarize_scan.py "/scan/$name.json" "$image" >> "$GITHUB_STEP_SUMMARY"
+            python scripts/lab-03/summarize_scan.py "$RUNNER_TEMP/scan/$name.json" "$image" >> "$GITHUB_STEP_SUMMARY"
             docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
               -v "$RUNNER_TEMP/trivy-cache:/root/.cache/trivy" "$SCANNER" image \
               --scanners vuln --severity CRITICAL --exit-code 1 "$image"

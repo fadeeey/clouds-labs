@@ -12,4 +12,6 @@
 
 ## Пока не проверено
 
-Пока нет фактического workflow run, поэтому digest broken release, его Trivy counts, HTTP/health наблюдения, сохранение контрольной записи и измеренное время восстановления остаются непроверенными.
+Первый hosted run [#39498264183](https://github.com/fadeeey/clouds-labs/actions/runs/39498264183) завершился до публикации и deploy: Python summary script не нашёл JSON Trivy по ошибочному host-пути `/scan/good-backend.json`. Вывод сканера находился в `$RUNNER_TEMP/scan`; workflow исправлен читать файл именно из этого смонтированного каталога.
+
+Digest broken release, итоговые Trivy counts, HTTP/health наблюдения, сохранение контрольной записи и измеренное время восстановления пока непроверены.
