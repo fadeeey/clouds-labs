@@ -5,7 +5,6 @@ from pathlib import Path
 import psycopg
 from flask import Flask, jsonify, request, send_from_directory
 
-
 FRONTEND_DIR = Path(__file__).resolve().parents[1] / "frontend"
 DATABASE_URL = os.environ.get("DATABASE_URL")
 if not DATABASE_URL:

@@ -1,0 +1,18 @@
+name: ЛР-03 · intentionally weak pipeline example
+
+on:
+  push:
+    branches:
+      - work/lab-03-bad-pipeline
+
+permissions:
+  contents: read
+
+jobs:
+  weak_pipeline:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4 # floating tag: no immutable action pin
+      - name: Build without quality, cache or vulnerability gates
+        run: docker buildx build --platform linux/arm64 --load -f docker/lab-02/Dockerfile.bad -t clouds-lab-backend:bad-example .
