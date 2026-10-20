@@ -1,97 +1,59 @@
-# Лабораторные по DevOps
+# DevOps
 
-В этом репозитории один сервис используется в лабораторных по DevOps. Здесь находятся код и отчёты; условия преподавателя лежат в папке предмета, вне Git-root.
+Журнал учебных задач проходит через лабораторные по Flask, PostgreSQL, Docker, Nginx и CI/CD.
 
-## Быстрый старт
+![Интерфейс журнала под HTTPS](labs/lab-01/evidence/app-https.png)
 
-Нужен Docker Desktop с Docker Compose. Сохраните репозиторий в папке с ASCII-именем, например `clouds-labs`: в проверенной среде совместная сборка двух сервисов из папки `Практика` завершалась ошибкой BuildKit `x-docker-expose-session-sharedkey`. После переименования обычный Compose build работает.
+## Быстрый запуск
 
-Создайте локальные настройки и материалы для самоподписанного TLS/basic auth, затем поднимите сервисы:
+Нужен Docker Desktop с Docker Compose. Рабочую копию держите в каталоге с ASCII-именем, например `clouds-labs`: в этой среде совместная сборка сервисов из каталога с кириллицей завершалась ошибкой BuildKit `x-docker-expose-session-sharedkey`; после перехода в каталог `clouds-labs` сборка прошла.
 
 ```sh
 cp .env.example .env
-# Откройте .env и задайте собственный локальный POSTGRES_PASSWORD.
+# Замените POSTGRES_PASSWORD на локальный пароль.
 ./scripts/lab-01-setup-local.sh
-docker compose up --build -d
-docker compose ps
+docker compose up --build --wait -d
 ```
 
-Откройте <http://localhost:8080>: Nginx перенаправит на HTTPS-порт 8443. Сертификат самоподписанный, поэтому браузер покажет локальное предупреждение. Проверка API без браузера:
-
-```sh
-curl -kfsS https://localhost:8443/healthz
-```
-
-Для остановки контейнеров и сохранения данных:
+Откройте <https://localhost:8443>. Сертификат самоподписанный, поэтому браузер покажет предупреждение. Готовность API и PostgreSQL можно проверить командой `curl -kfsS https://localhost:8443/healthz`. Остановить контейнеры, сохранив базу:
 
 ```sh
 docker compose down
 ```
 
-`docker compose down -v` удаляет именованный том с данными. Версия, проверенная для ЛР0, зафиксирована в [коммите `1c7c8d7`](https://github.com/fadeeey/clouds-labs/commit/1c7c8d7); там же сохранены отдельные команды запуска ЛР0. Эта инструкция описывает текущий трёхсервисный Compose-стек.
+Не добавляйте `-v`, если нужно сохранить данные PostgreSQL в именованном томе.
 
-## Текущая архитектура
+## Устройство
 
-В текущей конфигурации Nginx отдаёт HTML/CSS/JS по HTTPS и распределяет `/api` между двумя Flask-контейнерами; оба backend обращаются к PostgreSQL по внутренней сети. В исходной ЛР0 интерфейс и backend были в одном процессе — детали и воспроизводимые команды сохранены в [версии commit `1c7c8d7`](https://github.com/fadeeey/clouds-labs/commit/1c7c8d7). Следующие работы добавят проверку уязвимостей, CI/CD и откат.
+Nginx раздаёт статический интерфейс и распределяет запросы API между двумя Flask backend. Оба backend подключаются к отдельной PostgreSQL по внутренней сети.
 
 ```mermaid
 flowchart LR
-  B[Браузер] -->|HTTP| N[Nginx: статика и /api]
-  N --> F[Flask]
-  F -->|внутренняя сеть| P[(PostgreSQL)]
+  B[Браузер] -->|HTTPS: интерфейс и /api| N[Nginx]
+  N -->|/api| F1[Flask backend 1]
+  N -->|/api| F2[Flask backend 2]
+  F1 -->|database network| P[(PostgreSQL)]
+  F2 -->|database network| P
 ```
 
-## Маршрут и состояние
+## Лабораторные
 
-Работы расположены в выбранном порядке. Статус выполнения и статус приёмки указаны отдельно.
+| Работа | Что проверено | Отчёт и доказательства |
+|---|---|---|
+| ЛР0 | Интерфейс, API и отдельная PostgreSQL; запись осталась после обновления страницы. | [Отчёт](labs/lab-00/report.md) · [скриншот](labs/lab-00/evidence/app-created-task.png) · [воспроизводимая версия `1c7c8d7`](https://github.com/fadeeey/clouds-labs/commit/1c7c8d7) |
+| ЛР2 | Плохой и исправленный Dockerfile, cache, multi-stage, non-root и Compose из трёх сервисов. Исторические замеры привязаны к ревизии `e4e356f`. | [Отчёт](labs/lab-02/report.md) · [инструкции той ревизии](https://github.com/fadeeey/clouds-labs/blob/e4e356f/labs/lab-02/README.md) |
+| ЛР2* | Восстановление соединения с БД и ограниченная проверка CPU/RAM на изолированном стенде. | [Отчёт](labs/lab-02-star/report.md) · [фактические замеры](labs/lab-02-star/evidence/runtime-checks.txt) |
+| ЛР1 | HTTPS, два backend, балансировка, закрытый `/admin` и отдельный DNS-check при смене адреса backend. | [Отчёт](labs/lab-01/report.md) · [скриншот](labs/lab-01/evidence/app-https.png) · [HTTP-проверки](scripts/lab-01-check.sh) · [DNS-fixture](scripts/lab-01-dns-check.sh) |
+| ЛР1* | Три проверки на собственном Nginx-стенде с фиктивными файлами; внешний трафик и реальные секреты не использовались. | [Отчёт](labs/lab-01-star/report.md) · [вывод проверок](labs/lab-01-star/evidence/check-output.txt) |
+| ЛР3 | GitHub Actions: lint и тесты, сборка двух образов, Trivy и Critical gate, публикация в GHCR и временный deploy smoke test. | [Отчёт](labs/lab-03/report.md) · [успешный run](https://github.com/fadeeey/clouds-labs/actions/runs/39495550006) · [test gate](https://github.com/fadeeey/clouds-labs/actions/runs/39495954222) · [Critical gate](https://github.com/fadeeey/clouds-labs/actions/runs/39496087533) |
+| ЛР3* | В одном hosted run неисправная версия вернула 503; одна команда восстановила рабочий digest и ту же запись в БД. | [Отчёт](labs/lab-03-star/report.md) · [rollback run](https://github.com/fadeeey/clouds-labs/actions/runs/39499120264) · [лог job](https://github.com/fadeeey/clouds-labs/actions/runs/39499120264/job/118891789228) |
 
-| Работа | Тема | Выполнение | Приёмка |
-|---|---|---|---|
-| ЛР0 | Свой сервис | Проверено локально | Не отправлено |
-| ЛР2 | Docker и Compose | Проверено локально | Не отправлено |
-| ЛР2* | Самовосстановление и лимиты | Проверено локально | Не отправлено |
-| ЛР1 | Nginx и два backend | Проверено локально | Не отправлено |
-| ЛР1* | Проверка конфигурации Nginx | Проверено локально | Не отправлено |
-| ЛР3 | CI/CD | Проверено локально и в GitHub Actions | Не отправлено |
-| ЛР3* | Rollback | Проверено в GitHub Actions | Не отправлено |
+## Границы проверок
 
-Облачный трек отдельный и выполняется во второй половине семестра; сейчас он вне объёма.
+- GitHub-hosted deployment одноразовый: после smoke test его контейнеры и данные удаляются. Постоянный публичный сервис не создавался.
+- В опубликованных CI-образах проверены уровни Critical и High: 0 Critical; backend — 48 High (44 Debian и 4 Python), frontend — 45 High. Четыре Python finding остаются неразрешёнными; scope и ограничения Trivy SBOM описаны в [отчёте ЛР3](labs/lab-03/report.md). Средние и низкие уровни workflow не сканирует.
+- Локальные сертификат и Basic Auth создаются в `.local/nginx/`, исключённом из Git. Это только локальные файлы для учебного стенда.
+- Измеренное восстановление в rollback run — 0,552 с на одной GitHub-hosted VM; это результат конкретного прогона, не обещание SLA.
+- Отчёты ЛР0 и ЛР1 содержат настоящие снимки интерфейса. Остальные доказательства привязаны к записям команд и Actions runs в соответствующих отчётах.
 
-## Лаба 0
-
-- [Отчёт ЛР0](labs/lab-00/report.md) — фактическая проверка интерфейса, API, PostgreSQL и сохранения данных.
-- [Как запустить ЛР0](labs/lab-00/README.md) — пошаговая инструкция и команды.
-- [Скриншот приложения с сохранённой задачей](labs/lab-00/evidence/app-created-task.png).
-
-Задача в отчётном примере добавлена через реальный интерфейс; изображение снято после обновления страницы. Скриншоты следующих работ появятся только после их реального запуска.
-
-## Лаба 2
-
-- [Отчёт ЛР2](labs/lab-02/report.md) — размеры образов, замер повторной сборки и реальные проверки Compose.
-- [Запуск и устройство ЛР2](labs/lab-02/README.md).
-
-## Лаба 2*
-
-- [Отчёт ЛР2*](labs/lab-02-star/report.md) — восстановление PostgreSQL, лимиты и наблюдения под ограниченной нагрузкой.
-- [Фактические команды и замеры](labs/lab-02-star/evidence/runtime-checks.txt).
-
-## Лаба 1
-
-- [Отчёт ЛР1](labs/lab-01/report.md) — HTTPS, два backend, rate limit и проверка отказа одного экземпляра.
-- [Локальный запуск и тесты](labs/lab-01/README.md).
-- [Скриншот приложения по HTTPS](labs/lab-01/evidence/app-https.png).
-
-## Лаба 1*
-
-- [Отчёт ЛР1*](labs/lab-01-star/report.md) — три контролируемые проверки на собственном изолированном Nginx-стенде и соответствующие проверки основного конфига.
-- [Запуск локального стенда](labs/lab-01-star/README.md); скрипт после тестов удаляет свой контейнер и сеть.
-
-## Лаба 3
-
-- [Отчёт ЛР3](labs/lab-03/report.md) — hosted CI, приватный GHCR, сканирование обоих образов, реальный deploy smoke test и негативные gates.
-- [Успешный run](https://github.com/fadeeey/clouds-labs/actions/runs/39496839618); workflow-run временный, преподавателю не отправлено.
-
-## Лаба 3*
-
-- [Отчёт ЛР3*](labs/lab-03-star/report.md) — один hosted run с проверкой pinned image digests, контролируемым отказом frontend и восстановлением той же записи в БД.
-- [Успешный rollback run](https://github.com/fadeeey/clouds-labs/actions/runs/39499120264) — лог deploy/rollback и фактические значения.
+Условия курса остаются в папке предмета вне Git-репозитория. Облачный трек выполняется отдельно во второй половине семестра.

@@ -1,6 +1,6 @@
 # ЛР3 — CI/CD, сканирование и deployment
 
-**Статус:** GitHub-hosted pipeline, временный deployment и защитные gates проверены на реальных runs. Преподавателю не отправлено.
+**Статус:** GitHub-hosted pipeline, временный deployment и защитные gates проверены на реальных runs.
 
 ## Схема pipeline
 
