@@ -1,6 +1,6 @@
 # ЛР3 — CI/CD, сканирование и deployment
 
-**Статус:** локальная подготовка завершена; GitHub Actions run ещё не выполнен. Преподавателю не отправлено.
+**Статус:** hosted pipeline и разовый deployment проверены на GitHub Actions run #39495048433. Преподавателю не отправлено.
 
 ## Схема pipeline
 
@@ -38,4 +38,11 @@ Trivy предупреждает, что сторонние SBOM могут да
 
 ## Результат hosted run
 
-На момент подготовки этого отчёта GitHub run ещё не запускался. Проверка локального Compose не заменяет доказательство запуска Actions, публикации GHCR и pull по registry digest. Ни workflow, ни изображения пока не отмечены как принятые преподавателем.
+[Первый run #39494604671](https://github.com/fadeeey/clouds-labs/actions/runs/39494604671) завершил проверки, сборку, scan и публикацию, но deploy завершился с `curl: (56) Recv failure: Connection reset by peer` сразу после старта frontend-контейнера. В workflow добавил ограниченные повторные попытки для временных curl-ошибок и вывод логов frontend при окончательном сбое. [Повторный run #39495048433](https://github.com/fadeeey/clouds-labs/actions/runs/39495048433) завершился успешно за 2 мин 15 с: все три job зелёные, оба образа прошли Critical gate, deploy job отдельно скачал опубликованные манифесты по digest, проверил `/healthz` и выполнил API POST→GET для контрольной записи. Это доказывает проверку временного hosted стенда; публичный постоянно доступный сервис не создавался.
+
+| Опубликованный образ, run #39495048433 | Registry manifest digest | Локальный image config ID | Critical / High |
+|---|---|---|---:|
+| Backend | `sha256:67ee461dbda94492683273dc3a7f0ba19e123a7cfa8b1e45fb8bdde378bd9ec6` | `sha256:db0498c8631a7530338f2e000b6da0a22286a428ac3270bc64c831b6caf9ef33` | 0 / 48 |
+| Frontend | `sha256:f24db0f4305fe4ed02b44e7e6e9fbf5a5364bf8bcdd1e623dfa478447e9702c9` | `sha256:deae404a871cf747687eed8490aeba13e8c35e00b77ecd76fb4ea6c36db19bd7` | 0 / 45 |
+
+Оба образа просканированы одним Trivy DB snapshot (`2026-10-20T19:12:26Z`). High findings остаются видимыми в summary; Critical gate настроен на обе публикуемые images и не ослаблен. GHCR publish log — источник manifest digest; локальный `docker image inspect` ID относится к конфигурации образа и не подменяет registry digest.

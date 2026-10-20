@@ -129,8 +129,8 @@ jobs:
           echo "frontend_image=ghcr.io/${GITHUB_REPOSITORY}/frontend@$FRONTEND_DIGEST" >> "$GITHUB_OUTPUT"
           {
             echo "## Published image manifests"
-            echo "- Backend: `ghcr.io/${GITHUB_REPOSITORY}/backend@$BACKEND_DIGEST`"
-            echo "- Frontend: `ghcr.io/${GITHUB_REPOSITORY}/frontend@$FRONTEND_DIGEST`"
+            echo "- Backend: ghcr.io/${GITHUB_REPOSITORY}/backend@$BACKEND_DIGEST"
+            echo "- Frontend: ghcr.io/${GITHUB_REPOSITORY}/frontend@$FRONTEND_DIGEST"
           } >> "$GITHUB_STEP_SUMMARY"
           docker logout ghcr.io
       - name: Remove registry credentials from the runner
@@ -178,5 +178,5 @@ jobs:
           python -c 'import json,sys; marker=sys.argv[1]; created=json.loads(sys.argv[2]); listed=json.loads(sys.argv[3]); assert created["title"] == marker; assert any(row["id"] == created["id"] and row["title"] == marker for row in listed); print("health + POST + GET verified for", marker)' "$marker" "$created" "$listed"
           {
             echo "## Ephemeral deployment check"
-            echo "Compose pulled the exact registry digests above with `--no-build`. The health endpoint and task POST/GET round trip passed. The job then removes its isolated project and disposable volume."
+            echo "Compose pulled the exact registry digests above with the no-build option. The health endpoint and task POST/GET round trip passed. The job then removes its isolated project and disposable volume."
           } >> "$GITHUB_STEP_SUMMARY"
