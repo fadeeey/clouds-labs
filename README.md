@@ -27,14 +27,9 @@ docker compose down
 
 Nginx раздаёт статический интерфейс и распределяет запросы API между двумя Flask backend. Оба backend подключаются к отдельной PostgreSQL по внутренней сети.
 
-```mermaid
-flowchart LR
-  browser["Браузер"] -->|HTTPS| nginx["Nginx"]
-  nginx -->|/api| backend1["Flask 1"]
-  nginx -->|/api| backend2["Flask 2"]
-  backend1 --> database[("PostgreSQL")]
-  backend2 --> database
-```
+![Схема текущей архитектуры](docs/architecture.svg)
+
+Редактируемый исходник: [architecture.mmd](docs/architecture.mmd).
 
 ## Лабораторные
 

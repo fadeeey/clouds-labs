@@ -1,0 +1,6 @@
+flowchart LR
+  browser["Браузер"] -->|HTTPS| nginx["Nginx"]
+  nginx -->|/api| backend1["Flask 1"]
+  nginx -->|/api| backend2["Flask 2"]
+  backend1 --> database[("PostgreSQL")]
+  backend2 --> database

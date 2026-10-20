@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 280" role="img" aria-labelledby="title desc">
+  <title id="title">Схема текущей архитектуры</title>
+  <desc id="desc">Браузер обращается по HTTPS к Nginx. Nginx направляет запросы API на один из двух Flask backend. Оба backend подключены к PostgreSQL.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L8,4 L0,8 z" fill="#526579" />
+    </marker>
+    <style>
+      .node { fill: #ffffff; stroke: #9aabba; stroke-width: 1.5; }
+      .title { fill: #172b3a; font: 600 18px system-ui, sans-serif; }
+      .subtitle { fill: #526579; font: 14px system-ui, sans-serif; }
+      .edge { fill: none; stroke: #526579; stroke-width: 2; marker-end: url(#arrow); }
+      .edge-label { fill: #344b5e; font: 13px system-ui, sans-serif; paint-order: stroke; stroke: #f5f7fa; stroke-width: 5px; stroke-linejoin: round; }
+    </style>
+  </defs>
+  <rect width="980" height="280" rx="12" fill="#f5f7fa" />
+
+  <path class="edge" d="M185 140 H270" />
+  <text class="edge-label" x="211" y="128">HTTPS</text>
+  <path class="edge" d="M450 140 C495 140 495 91 545 91" />
+  <path class="edge" d="M450 140 C495 140 495 201 545 201" />
+  <text class="edge-label" x="480" y="124">/api</text>
+  <path class="edge" d="M715 91 C750 91 748 140 785 140" />
+  <path class="edge" d="M715 201 C750 201 748 140 785 140" />
+  <text class="edge-label" x="741" y="124">DB</text>
+
+  <rect class="node" x="35" y="104" width="150" height="72" rx="9" />
+  <text class="title" x="110" y="137" text-anchor="middle">Браузер</text>
+  <text class="subtitle" x="110" y="158" text-anchor="middle">пользователь</text>
+
+  <rect class="node" x="270" y="104" width="180" height="72" rx="9" />
+  <text class="title" x="360" y="137" text-anchor="middle">Nginx</text>
+  <text class="subtitle" x="360" y="158" text-anchor="middle">HTTPS и балансировка</text>
+
+  <rect class="node" x="545" y="55" width="170" height="72" rx="9" />
+  <text class="title" x="630" y="88" text-anchor="middle">Flask 1</text>
+  <text class="subtitle" x="630" y="109" text-anchor="middle">backend</text>
+
+  <rect class="node" x="545" y="165" width="170" height="72" rx="9" />
+  <text class="title" x="630" y="198" text-anchor="middle">Flask 2</text>
+  <text class="subtitle" x="630" y="219" text-anchor="middle">backend</text>
+
+  <rect class="node" x="785" y="104" width="160" height="72" rx="9" />
+  <text class="title" x="865" y="137" text-anchor="middle">PostgreSQL</text>
+  <text class="subtitle" x="865" y="158" text-anchor="middle">отдельная БД</text>
+</svg>
