@@ -81,7 +81,30 @@ jobs:
           good_env="$RUNNER_TEMP/lab03star-good.env"
           broken_env="$RUNNER_TEMP/lab03star-broken.env"
           rollback_env="$RUNNER_TEMP/lab03star-rollback.env"
-          trap '"${compose[@]}" --env-file "$good_env" down --volumes --remove-orphans >/dev/null 2>&1 || true; docker logout ghcr.io >/dev/null 2>&1 || true; rm -f "$good_env" "$broken_env" "$rollback_env"' EXIT
+          cleanup() {
+            result=$?
+            if test "$result" -ne 0; then
+              "${compose[@]}" --env-file "$good_env" ps -a || true
+              "${compose[@]}" --env-file "$good_env" logs --tail 50 frontend || true
+            fi
+            "${compose[@]}" --env-file "$good_env" down --volumes --remove-orphans >/dev/null 2>&1 || true
+            docker logout ghcr.io >/dev/null 2>&1 || true
+            rm -f "$good_env" "$broken_env" "$rollback_env"
+            exit "$result"
+          }
+          trap cleanup EXIT
+          verify_frontend() {
+            config=$1
+            expected=$2
+            container=$("${compose[@]}" --env-file "$config" ps -q frontend)
+            test -n "$container"
+            actual_ref=$(docker inspect "$container" --format '{{.Config.Image}}')
+            actual_id=$(docker inspect "$container" --format '{{.Image}}')
+            expected_id=$(docker image inspect "$expected" --format '{{.Id}}')
+            test "$actual_ref" = "$expected"
+            test "$actual_id" = "$expected_id"
+            echo "Running frontend verified: $actual_ref; image ID $actual_id"
+          }
           umask 077
           POSTGRES_PASSWORD=$(openssl rand -hex 24)
           printf 'BACKEND_IMAGE=%s\nFRONTEND_IMAGE=%s\nPOSTGRES_PASSWORD=%s\n' "$GOOD_BACKEND" "$GOOD_FRONTEND" "$POSTGRES_PASSWORD" > "$good_env"
@@ -89,7 +112,8 @@ jobs:
           cp "$good_env" "$rollback_env"
 
           "${compose[@]}" --env-file "$good_env" up -d --no-build --wait --wait-timeout 90
-          curl --fail --silent --show-error --retry 20 --retry-delay 1 --retry-all-errors http://127.0.0.1:18080/healthz
+          python scripts/lab-03/wait_http.py http://127.0.0.1:18080/healthz 200
+          verify_frontend "$good_env" "$GOOD_FRONTEND"
           marker="rollback-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           payload=$(python -c 'import json,sys; print(json.dumps({"title":sys.argv[1]}))' "$marker")
           created=$(curl --fail --silent --show-error -H 'Content-Type: application/json' -d "$payload" http://127.0.0.1:18080/api/tasks)
@@ -101,28 +125,35 @@ jobs:
           echo "Baseline release healthy; control task id=$task_id; database volume=$volume_before"
 
           "${compose[@]}" --env-file "$broken_env" up -d --no-deps --no-build frontend
-          broken_status=$(curl --silent --show-error --output "$RUNNER_TEMP/broken-response.txt" --write-out '%{http_code}' --max-time 5 --retry 15 --retry-delay 1 --retry-all-errors http://127.0.0.1:18080/healthz || true)
-          test "$broken_status" = 503
+          verify_frontend "$broken_env" "$BROKEN_FRONTEND"
+          python scripts/lab-03/wait_http.py http://127.0.0.1:18080/healthz 503 \
+            --release-marker controlled-broken | tee "$RUNNER_TEMP/broken-response.json"
+          broken_status=503
           frontend_id=$("${compose[@]}" --env-file "$broken_env" ps -q frontend)
-          for attempt in $(seq 1 15); do
+          health_deadline=$((SECONDS + 90))
+          while true; do
             frontend_health=$(docker inspect "$frontend_id" --format '{{.State.Health.Status}}')
             test "$frontend_health" = unhealthy && break
+            if test "$SECONDS" -ge "$health_deadline"; then
+              echo "Broken frontend did not become unhealthy before deadline: $frontend_health" >&2
+              exit 1
+            fi
             sleep 1
           done
-          test "$frontend_health" = unhealthy
           test "$("${compose[@]}" --env-file "$broken_env" ps -q backend)" = "$backend_before"
           test "$("${compose[@]}" --env-file "$broken_env" ps -q db)" = "$db_before"
           volume_during=$(docker volume inspect "${DEPLOY_PROJECT}_postgres_data" --format '{{.Name}} {{.CreatedAt}}')
           test "$volume_during" = "$volume_before"
           echo "Broken release observed: HTTP $broken_status; frontend health=$frontend_health; backend, DB and volume unchanged."
 
-          rollback_started=$(python -c 'import time; print(time.time_ns())')
+          rollback_started=$(python -c 'import time; print(time.monotonic_ns())')
           rollback_started_utc=$(date -u +%FT%TZ)
           "${compose[@]}" --env-file "$rollback_env" up -d --no-deps --no-build frontend
-          curl --fail --silent --show-error --retry 30 --retry-delay 1 --retry-all-errors http://127.0.0.1:18080/healthz
+          python scripts/lab-03/wait_http.py http://127.0.0.1:18080/healthz 200
+          verify_frontend "$rollback_env" "$GOOD_FRONTEND"
           listed=$(curl --fail --silent --show-error http://127.0.0.1:18080/api/tasks)
           python -c 'import json,sys; task_id=int(sys.argv[1]); marker=sys.argv[2]; rows=json.loads(sys.argv[3]); assert any(row["id"] == task_id and row["title"] == marker for row in rows); print("Rollback restored health and control task", task_id, marker)' "$task_id" "$marker" "$listed"
-          rollback_finished=$(python -c 'import time; print(time.time_ns())')
+          rollback_finished=$(python -c 'import time; print(time.monotonic_ns())')
           rollback_finished_utc=$(date -u +%FT%TZ)
           test "$("${compose[@]}" --env-file "$rollback_env" ps -q backend)" = "$backend_before"
           test "$("${compose[@]}" --env-file "$rollback_env" ps -q db)" = "$db_before"
