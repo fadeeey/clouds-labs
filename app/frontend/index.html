@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f4f1e8">
+    <title>Задачи — лабораторный журнал</title>
+    <link rel="stylesheet" href="/assets/styles.css">
+    <script src="/assets/app.js" defer></script>
+  </head>
+  <body>
+    <main class="shell">
+      <header class="topline">
+        <a class="wordmark" href="/" aria-label="Главная страница">Лабораторный журнал<span> / учебные задачи</span></a>
+        <span class="status" id="connection" role="status">проверяем связь…</span>
+      </header>
+
+      <section class="intro" aria-labelledby="page-title">
+        <p class="eyebrow">Учебный сервис</p>
+        <h1 id="page-title">Учебные задачи</h1>
+        <p class="lede">Список хранится в PostgreSQL и остаётся доступным после обновления страницы.</p>
+      </section>
+
+      <section class="board" aria-labelledby="tasks-title">
+        <form id="task-form" class="composer">
+          <label class="sr-only" for="task-title">Новая задача</label>
+          <input id="task-title" name="title" maxlength="200" placeholder="Например: проверить подключение к PostgreSQL" required>
+          <button type="submit">Добавить <span aria-hidden="true">↗</span></button>
+        </form>
+        <p class="feedback" id="feedback" role="status" aria-live="polite"></p>
+        <div class="list-heading">
+          <h2 id="tasks-title">В списке</h2>
+          <span id="task-count">0 задач</span>
+        </div>
+        <ul id="task-list" class="task-list" aria-live="polite"></ul>
+        <p id="empty-state" class="empty-state">Задач пока нет.</p>
+      </section>
+
+      <footer>Интерфейс → API → отдельная PostgreSQL.</footer>
+    </main>
+  </body>
+</html>
