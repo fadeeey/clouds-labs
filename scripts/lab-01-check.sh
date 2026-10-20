@@ -48,6 +48,7 @@ check_code 401 "$base/admin/" "${resolve_app[@]}"
 check_code 200 "$base/assets/app.js" "${resolve_app[@]}"
 check_code 200 "$base/assets/styles.css" "${resolve_app[@]}"
 check_code 404 "$base/assets/admin/index.html" "${resolve_app[@]}"
+check_code 404 "$base/assets/docs/lab-notes.txt" "${resolve_app[@]}"
 netrc="$(mktemp "$repo_root/.local/nginx/netrc.XXXXXX")"
 trap 'rm -f "$netrc"' EXIT
 printf 'machine app.local login student password %s\n' "$(cat .local/nginx/admin-password.txt)" > "$netrc"
