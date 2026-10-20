@@ -167,7 +167,10 @@ jobs:
           printf 'BACKEND_IMAGE=%s\nFRONTEND_IMAGE=%s\nPOSTGRES_PASSWORD=%s\n' "$BACKEND_IMAGE" "$FRONTEND_IMAGE" "$POSTGRES_PASSWORD" > "$env_file"
           docker compose --project-name "$DEPLOY_PROJECT" --env-file "$env_file" -f docker/lab-03/compose.deploy.yaml pull
           docker compose --project-name "$DEPLOY_PROJECT" --env-file "$env_file" -f docker/lab-03/compose.deploy.yaml up -d --no-build
-          curl --fail --silent --show-error --retry 20 --retry-delay 2 http://127.0.0.1:18080/healthz
+          if ! curl --fail --silent --show-error --retry 20 --retry-delay 2 --retry-all-errors http://127.0.0.1:18080/healthz; then
+            docker compose --project-name "$DEPLOY_PROJECT" --env-file "$env_file" -f docker/lab-03/compose.deploy.yaml logs --no-color frontend
+            exit 1
+          fi
           marker="ci-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           payload=$(python -c 'import json,sys; print(json.dumps({"title":sys.argv[1]}))' "$marker")
           created=$(curl --fail --silent --show-error -H 'Content-Type: application/json' -d "$payload" http://127.0.0.1:18080/api/tasks)
