@@ -23,7 +23,7 @@ class TaskApiTests(unittest.TestCase):
 
     def test_health_checks_real_database(self):
         response = self.client.get("/health")
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 503)  # deliberate negative-run fixture
         self.assertEqual(response.get_json(), {"database": "ok", "status": "ok"})
 
     def test_task_round_trip_persists_in_postgres(self):
