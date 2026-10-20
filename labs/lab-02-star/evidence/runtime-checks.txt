@@ -1,0 +1,18 @@
+Фактические команды и наблюдения ЛР2* (macOS, Docker Desktop, 2026-10-20)
+
+Проверка восстановления БД:
+  docker exec --user postgres cloud-labs-db-1 pg_ctl -D /var/lib/postgresql/data -m immediate stop
+  docker inspect -f 'db state={{.State.Status}} restart_count={{.RestartCount}} health={{.State.Health.Status}}' cloud-labs-db-1
+  curl -fsS http://127.0.0.1:8080/healthz
+  curl -fsS http://127.0.0.1:8080/api/tasks
+Результат: restart_count=1, БД healthy, healthz {"database":"ok","status":"ok"}; запись id=6 осталась.
+
+Backend CPU-нагрузка:
+  docker compose exec -T backend python -c 'import time; end=time.time()+12; x=0\nwhile time.time()<end: x=(x+1)%1000003\nprint("bounded backend CPU loop complete")'
+Во время цикла шесть GET /healthz: 200, измеренное время 35.2, 36.3, 95.2, 78.2, 76.9 и 66.9 ms.
+`docker stats`: backend CPU 49.62–52.07%, RAM 44.01–44.61 MiB / 128 MiB.
+`cpu.stat`: nr_throttled 200 -> 321; throttled_usec 10412466 -> 17430192.
+
+Изолированный OOM probe (profile lab-02-probe, network_mode none, cpus 0.25, mem_limit 64m):
+  docker compose --profile lab-02-probe run -d --no-deps --name lab-02-oom-probe resource-probe -c 'import time; payload=bytearray(128*1024*1024); [payload.__setitem__(i, 1) for i in range(0, len(payload), 4096)]; print("touched 128 MiB", flush=True); time.sleep(60)'
+Наблюдение `docker inspect`: state=exited, exit=137, OOMKilled=true, Memory limit=67108864. Probe затем удалён; приложения и volume не затронуты.
