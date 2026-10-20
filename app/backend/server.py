@@ -12,6 +12,8 @@ if not DATABASE_URL:
 
 app = Flask(__name__, static_folder=None)
 BACKEND_ID = os.environ.get("BACKEND_ID", "backend-1")
+PUBLIC_ASSETS = frozenset({"app.js", "styles.css"})
+INIT_DB_LOCK_KEY = 1_127_450_708_101
 
 
 @app.after_request
@@ -29,6 +31,9 @@ def init_db():
         try:
             with connect() as connection:
                 connection.execute(
+                    "SELECT pg_advisory_xact_lock(%s)", (INIT_DB_LOCK_KEY,)
+                )
+                connection.execute(
                     """
                     CREATE TABLE IF NOT EXISTS tasks (
                         id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -41,7 +46,9 @@ def init_db():
         except psycopg.OperationalError:
             if attempt == 29:
                 raise
-            print(f"PostgreSQL isn't ready yet; retrying ({attempt + 1}/30).", flush=True)
+            print(
+                f"PostgreSQL isn't ready yet; retrying ({attempt + 1}/30).", flush=True
+            )
             time.sleep(1)
 
 
@@ -52,6 +59,8 @@ def index():
 
 @app.get("/assets/<path:filename>")
 def frontend_asset(filename):
+    if filename not in PUBLIC_ASSETS:
+        return jsonify(error="Not found"), 404
     return send_from_directory(FRONTEND_DIR, filename)
 
 

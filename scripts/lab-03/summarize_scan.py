@@ -15,14 +15,17 @@ def main() -> int:
     counts: Counter[str] = Counter()
     for result in report.get("Results", []):
         for vulnerability in result.get("Vulnerabilities", []):
-            counts[vulnerability.get("Severity", "UNKNOWN")] += 1
+            severity = vulnerability.get("Severity", "UNKNOWN")
+            if severity in {"CRITICAL", "HIGH"}:
+                counts[severity] += 1
     cache_dir = Path(os.environ.get("TRIVY_CACHE_DIR", path.parent.parent / "trivy-cache"))
     metadata_path = cache_dir / "db" / "metadata.json"
     metadata = json.loads(metadata_path.read_text()) if metadata_path.exists() else {}
     print(f"### Trivy scan: `{image}`")
     print(f"\nLocal image config digest: `{report.get('Metadata', {}).get('ImageID', 'not found')}`.")
+    print("\nWorkflow scan scope: `HIGH` and `CRITICAL`; lower severities are excluded by Trivy configuration.")
     print("\n| Severity | Findings |\n|---|---:|")
-    for severity in ("CRITICAL", "HIGH", "MEDIUM", "LOW"):
+    for severity in ("CRITICAL", "HIGH"):
         print(f"| {severity} | {counts[severity]} |")
     print(f"\nDatabase updated: `{metadata.get('UpdatedAt', 'not found')}`; Trivy schema: `{metadata.get('Version', 'not found')}`.")
     return 0

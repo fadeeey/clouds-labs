@@ -32,14 +32,32 @@ class TaskApiTests(unittest.TestCase):
 
         listed = self.client.get("/api/tasks")
         self.assertIn(
-            {"id": created.get_json()["id"], "title": self.marker,
-             "created_at": created.get_json()["created_at"]},
+            {
+                "id": created.get_json()["id"],
+                "title": self.marker,
+                "created_at": created.get_json()["created_at"],
+            },
             listed.get_json(),
         )
 
     def test_blank_task_is_rejected(self):
         response = self.client.post("/api/tasks", json={"title": "  "})
         self.assertEqual(response.status_code, 400)
+
+    def test_only_public_frontend_assets_are_available(self):
+        for asset in ("app.js", "styles.css"):
+            with self.subTest(asset=asset):
+                response = self.client.get(f"/assets/{asset}")
+                self.assertEqual(response.status_code, 200)
+                response.close()
+
+        for path in (
+            "/assets/admin/index.html",
+            "/assets/docs/lab-notes.txt",
+            "/admin",
+        ):
+            with self.subTest(path=path):
+                self.assertEqual(self.client.get(path).status_code, 404)
 
 
 if __name__ == "__main__":
