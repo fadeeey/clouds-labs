@@ -51,8 +51,16 @@ read_response() {
   printf '%s %s\n' "$code" "$(awk 'BEGIN{IGNORECASE=1} /^X-Upstream:/{gsub("\r", ""); print $2}' "$tmp_dir/headers")"
 }
 
-initial="$(read_response)"
-[[ "$initial" == "200 $backend_a_ip:80" ]]
+initial=''
+for attempt in $(seq 1 15); do
+  initial="$(read_response)"
+  [[ "$initial" == "200 $backend_a_ip:80" ]] && break
+  sleep 1
+done
+[[ "$initial" == "200 $backend_a_ip:80" ]] || {
+  printf 'Initial backend did not become ready. Last response: %s\n' "$initial" >&2
+  exit 1
+}
 printf 'Initial backend: %s (%s)\n' "$backend_a" "$backend_a_ip"
 
 docker rm -f "$backend_a" >/dev/null
