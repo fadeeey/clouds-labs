@@ -1,4 +1,5 @@
 import os
+import time
 from pathlib import Path
 
 import psycopg
@@ -18,16 +19,24 @@ def connect():
 
 
 def init_db():
-    with connect() as connection:
-        connection.execute(
-            """
-            CREATE TABLE IF NOT EXISTS tasks (
-                id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-                title TEXT NOT NULL CHECK (length(trim(title)) BETWEEN 1 AND 200),
-                created_at TIMESTAMPTZ NOT NULL DEFAULT now()
-            )
-            """
-        )
+    for attempt in range(30):
+        try:
+            with connect() as connection:
+                connection.execute(
+                    """
+                    CREATE TABLE IF NOT EXISTS tasks (
+                        id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+                        title TEXT NOT NULL CHECK (length(trim(title)) BETWEEN 1 AND 200),
+                        created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+                    )
+                    """
+                )
+            return
+        except psycopg.OperationalError:
+            if attempt == 29:
+                raise
+            print(f"PostgreSQL isn't ready yet; retrying ({attempt + 1}/30).", flush=True)
+            time.sleep(1)
 
 
 @app.get("/")
@@ -89,4 +98,8 @@ def live():
 
 if __name__ == "__main__":
     init_db()
-    app.run(host="127.0.0.1", port=5000, debug=False)
+    app.run(
+        host=os.environ.get("HOST", "127.0.0.1"),
+        port=int(os.environ.get("PORT", "5000")),
+        debug=False,
+    )

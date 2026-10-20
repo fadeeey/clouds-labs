@@ -2,7 +2,7 @@ name: cloud-labs
 
 services:
   db:
-    image: postgres:17.6-alpine
+    image: postgres:17.6-alpine@sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94
     environment:
       POSTGRES_DB: tasks
       POSTGRES_USER: tasks
@@ -11,11 +11,45 @@ services:
       - "127.0.0.1:5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - database
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U tasks -d tasks"]
       interval: 3s
       timeout: 3s
       retries: 20
 
+  backend:
+    image: clouds-lab-backend:local
+    build:
+      context: .
+      dockerfile: docker/lab-02/Dockerfile.good
+    environment:
+      DATABASE_URL: postgresql://tasks:${POSTGRES_PASSWORD:?Copy .env.example to .env and set POSTGRES_PASSWORD}@db:5432/tasks
+    depends_on:
+      - db
+    ports:
+      - "127.0.0.1:5001:5000"
+    networks:
+      - frontend
+      - database
+
+  frontend:
+    image: clouds-lab-frontend:local
+    build:
+      context: .
+      dockerfile: docker/lab-02/Dockerfile.frontend
+    depends_on:
+      - backend
+    ports:
+      - "127.0.0.1:8080:80"
+    networks:
+      - frontend
+
 volumes:
   postgres_data:
+
+networks:
+  frontend:
+  database:
+    internal: true
