@@ -1,6 +1,6 @@
 # ЛР3 — CI/CD, сканирование и deployment
 
-**Статус:** hosted pipeline и разовый deployment проверены на GitHub Actions run #39495048433. Преподавателю не отправлено.
+**Статус:** GitHub-hosted pipeline, временный deployment и защитные gates проверены на реальных runs. Преподавателю не отправлено.
 
 ## Схема pipeline
 
@@ -23,7 +23,7 @@ Workflow использует GitHub-hosted `ubuntu-24.04-arm`, чтобы со�
 
 ## Локальное сравнение уязвимостей
 
-Trivy 0.74.0 использовал базу, обновлённую `2026-10-20T19:12:26Z`. Оба образа собраны под `linux/arm64`; digest ниже — локальный image config ID, а не registry manifest digest. Финальная CI-таблица будет дополнена registry digest для каждого опубликованного образа.
+Trivy 0.74.0 использовал базу, обновлённую `2026-10-20T19:12:26Z`. Оба образа собраны под `linux/arm64`; digest ниже — локальный image config ID, а не registry manifest digest.
 
 | Снимок backend | Базовый образ | Локальный image config ID | Critical | High |
 |---|---|---|---:|---:|
@@ -38,11 +38,19 @@ Trivy предупреждает, что сторонние SBOM могут да
 
 ## Результат hosted run
 
-[Первый run #39494604671](https://github.com/fadeeey/clouds-labs/actions/runs/39494604671) завершил проверки, сборку, scan и публикацию, но deploy завершился с `curl: (56) Recv failure: Connection reset by peer` сразу после старта frontend-контейнера. В workflow добавил ограниченные повторные попытки для временных curl-ошибок и вывод логов frontend при окончательном сбое. [Повторный run #39495048433](https://github.com/fadeeey/clouds-labs/actions/runs/39495048433) завершился успешно за 2 мин 15 с: все три job зелёные, оба образа прошли Critical gate, deploy job отдельно скачал опубликованные манифесты по digest, проверил `/healthz` и выполнил API POST→GET для контрольной записи. Это доказывает проверку временного hosted стенда; публичный постоянно доступный сервис не создавался.
+[Первый run #39494604671](https://github.com/fadeeey/clouds-labs/actions/runs/39494604671) завершил проверки, сборку, scan и публикацию, но deploy завершился с `curl: (56) Recv failure: Connection reset by peer` сразу после старта frontend-контейнера. В workflow добавил ограниченные повторные попытки для временных curl-ошибок и вывод логов frontend при окончательном сбое. [Run #2](https://github.com/fadeeey/clouds-labs/actions/runs/39495048433) завершился успешно за 2 мин 15 с. На [run #3](https://github.com/fadeeey/clouds-labs/actions/runs/39495550006) уже с исправленным отображением manifest refs тоже успешно прошли все три job: оба образа прошли Critical gate, deploy job отдельно скачал опубликованные манифесты по digest, проверил `/healthz` и выполнил API POST→GET для контрольной записи. Это доказывает проверку временного hosted стенда; публичный постоянно доступный сервис не создавался.
 
-| Опубликованный образ, run #39495048433 | Registry manifest digest | Локальный image config ID | Critical / High |
+| Опубликованный образ, run #39495550006 | Registry manifest digest | Локальный image config ID | Critical / High |
 |---|---|---|---:|
-| Backend | `sha256:67ee461dbda94492683273dc3a7f0ba19e123a7cfa8b1e45fb8bdde378bd9ec6` | `sha256:db0498c8631a7530338f2e000b6da0a22286a428ac3270bc64c831b6caf9ef33` | 0 / 48 |
-| Frontend | `sha256:f24db0f4305fe4ed02b44e7e6e9fbf5a5364bf8bcdd1e623dfa478447e9702c9` | `sha256:deae404a871cf747687eed8490aeba13e8c35e00b77ecd76fb4ea6c36db19bd7` | 0 / 45 |
+| Backend | `sha256:324266ac76363633c1f06bed23ee9e4841dd2a806624abadea6b4c8b0b967948` | `sha256:57f7c7348b129bc7c6d35aace028930b0b60eca0b4e6b091610d5427f1d9090e` | 0 / 48 |
+| Frontend | `sha256:9615ba7d997bdc3c579639db2ef23934d90b3fc06105e5ed8dbd5d3a2e6d0a38` | `sha256:83f9e391292054441f4a93190ca2859300816803979e45c56cda33f2ac3f7676` | 0 / 45 |
 
 Оба образа просканированы одним Trivy DB snapshot (`2026-10-20T19:12:26Z`). High findings остаются видимыми в summary; Critical gate настроен на обе публикуемые images и не ослаблен. GHCR publish log — источник manifest digest; локальный `docker image inspect` ID относится к конфигурации образа и не подменяет registry digest.
+
+## Проверки защитных gates
+
+На отдельной ветке [`work/lab-03-negative-test`](https://github.com/fadeeey/clouds-labs/tree/work/lab-03-negative-test) run [#39495954222](https://github.com/fadeeey/clouds-labs/actions/runs/39495954222) намеренно проверял неправильное ожидание `503` вместо фактического `200`. Один из трёх PostgreSQL integration tests упал с `AssertionError: 200 != 503`; job validation завершился с ошибкой, а build/publish и deploy jobs получили статус `skipped`.
+
+На отдельной trusted ветке [`work/lab-03-negative-critical`](https://github.com/fadeeey/clouds-labs/tree/work/lab-03-negative-critical) run [#39496087533](https://github.com/fadeeey/clouds-labs/actions/runs/39496087533) собрал намеренно слабый backend образ из `Dockerfile.bad`. Trivy нашёл `16 Critical`; обязательный gate завершился exit 1, поэтому GHCR publish и deploy jobs были skipped. Зелёные образы в том же run отдельно имели 0 Critical (backend 48 High, frontend 45 High).
+
+Плохой pipeline также запускался отдельно: [run #39496404487](https://github.com/fadeeey/clouds-labs/actions/runs/39496404487) успешно собрал только пример из `lab-03-bad.yml`. В нём зафиксированы плавающий `actions/checkout@v4`, отсутствие lint и integration tests, проверки cache и Trivy gate, а также отсутствие публикации и deployment. Ни одна из этих отрицательных веток не объединяется в основной рабочий branch.
