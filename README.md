@@ -29,11 +29,11 @@ Nginx раздаёт статический интерфейс и распред
 
 ```mermaid
 flowchart LR
-  B[Браузер] -->|HTTPS: интерфейс и /api| N[Nginx]
-  N -->|/api| F1[Flask backend 1]
-  N -->|/api| F2[Flask backend 2]
-  F1 -->|database network| P[(PostgreSQL)]
-  F2 -->|database network| P
+  browser["Браузер"] -->|HTTPS| nginx["Nginx"]
+  nginx -->|/api| backend1["Flask 1"]
+  nginx -->|/api| backend2["Flask 2"]
+  backend1 --> database[("PostgreSQL")]
+  backend2 --> database
 ```
 
 ## Лабораторные

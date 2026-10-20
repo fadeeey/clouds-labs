@@ -28,3 +28,20 @@ Live backend after stop: backend-1
 backend2 was started again and returned to healthy.
 
 The private admin password and TLS private key are not recorded here.
+
+Повторная проверка после исправления allowlist и добавления проверок assets
+Дата: 2026-10-21 (локальная машина, MSK)
+Команда: ./scripts/lab-01-check.sh
+
+https://app.local:8443/admin -> HTTP 401 (ожидалось 401)
+https://app.local:8443/admin/ -> HTTP 401 (ожидалось 401)
+https://app.local:8443/assets/app.js -> HTTP 200 (ожидалось 200)
+https://app.local:8443/assets/styles.css -> HTTP 200 (ожидалось 200)
+https://app.local:8443/assets/admin/index.html -> HTTP 404 (ожидалось 404)
+https://app.local:8443/assets/docs/lab-notes.txt -> HTTP 404 (ожидалось 404)
+https://app.local:8443/admin -> HTTP 200 (ожидалось 200; локальная авторизация)
+HTTP 429 responses: 20 / 24
+API после остановки backend2 -> HTTP 200; backend2 после проверки возвращён в healthy.
+All Lab 1 checks passed.
+
+Пароль Basic Auth и приватный TLS-ключ не сохраняются в evidence.

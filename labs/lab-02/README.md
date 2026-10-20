@@ -10,7 +10,7 @@
 
 ## Что сравнивалось
 
-`docker/lab-02/Dockerfile.bad` показывает плавающую версию Python, запуск от root, копирование всего контекста до установки зависимостей, а также отсутствие `.dockerignore`, multi-stage-сборки и `HEALTHCHECK`. В `Dockerfile.good` закреплён digest multi-arch образа, зависимости отделены от кода, runtime работает от пользователя `app`, а контекст исключает лишние файлы.
+`docker/lab-02/Dockerfile.bad` показывает плавающую версию Python, запуск от root и копирование контекста до установки зависимостей; в нём также нет multi-stage-сборки и `HEALTHCHECK`. Корневой `.dockerignore` применяется к обоим вариантам. В `Dockerfile.good` закреплён digest multi-arch образа, зависимости отделены от кода, а runtime работает от пользователя `app`.
 
 | Образ | `docker image inspect .Size` | Изменение одной строки HTML, тёплый кэш |
 |---|---:|---:|
