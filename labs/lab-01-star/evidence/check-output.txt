@@ -1,0 +1,15 @@
+ЛР1*, локальная проверка на macOS с Docker Desktop
+Дата проверки/фиксации: 2026-10-20, MSK
+Команда: ./scripts/lab-01-star-check.sh
+
+traversal: GET /img../secret.txt -> HTTP 200
+listing: GET /backup/ -> HTTP 200
+dotfile: GET /.env -> HTTP 200
+Exposed test fixtures matched all three checks; no external host or real credentials were used.
+
+Дополнительные попытки на основном Nginx (Docker Compose):
+  curl --path-as-is -k https://app.local:8443/docs/../404.html -> HTTP 404, собственная 404-страница
+  curl --path-as-is -k https://app.local:8443/.env -> HTTP 404, собственная 404-страница
+  curl --path-as-is -k https://app.local:8443/docs/ -> HTTP 403, каталог не перечисляется
+
+Стендовый Nginx удалён после проверки. В выводах и скриншотах только учебные fixtures.
