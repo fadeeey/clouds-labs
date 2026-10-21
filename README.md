@@ -25,10 +25,10 @@ Nginx принимает HTTPS; backend делят одну PostgreSQL, данн
 
 ### CI и откат
 
-Схема pipeline: `lint → PostgreSQL tests → build → Trivy → GHCR → deploy smoke`.
+Схема pipeline: `lint → PostgreSQL tests → build → Trivy → GHCR → deploy smoke`; [успешный run #39495550006](https://github.com/fadeeey/clouds-labs/actions/runs/39495550006).
 
 - Негативный тест завершился ошибкой; build и deploy были пропущены в [run #39495954222](https://github.com/fadeeey/clouds-labs/actions/runs/39495954222).
-- Образ с 16 Critical остановил публикацию и deploy в [run #39496087533](https://github.com/fadeeey/clouds-labs/actions/runs/39496087533). В обычных образах Critical — 0; остаются 48 High у backend и 45 High у frontend. Четыре Python-находки backend не разрешены; детали и ограничения сканирования — в [отчёте ЛР3](labs/lab-03/report.md).
+- Образ с 16 Critical остановил публикацию и deploy в [run #39496087533](https://github.com/fadeeey/clouds-labs/actions/runs/39496087533). В обычных образах Critical — 0; остаются 48 High у backend и 45 High у frontend. Четыре Python-находки backend остаются неустранёнными; детали и ограничения сканирования — в [отчёте ЛР3](labs/lab-03/report.md).
 
 | Рабочий релиз | Неисправный frontend | Откат |
 |---|---|---|
