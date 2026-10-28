@@ -1,0 +1,13 @@
+# Read-only readiness check of the existing Lab 2 Compose project
+# Date: 2026-10-28
+# Only this compose.yaml project was queried; no logs, database contents, or other projects were read.
+
+$ docker compose -f compose.yaml ps --format 'table {{.Service}}\t{{.State}}\t{{.Health}}'
+SERVICE    STATE     <no value>
+backend    running   healthy
+backend2   running   healthy
+db         running   healthy
+frontend   running   healthy
+
+$ curl -k --resolve localhost:8443:127.0.0.1 -sS -o /dev/null -w 'GET /api/tasks -> HTTP %{http_code}\n' https://localhost:8443/api/tasks
+GET /api/tasks -> HTTP 200

@@ -1,0 +1,16 @@
+# Actual GitHub Actions deployment verification output, read from the expanded step
+# Run: https://github.com/fadeeey/clouds-labs/actions/runs/39505104091
+# Job: Pull and verify published digests
+# Step: Deploy published images in an isolated Compose project
+# Run status: succeeded; step duration: 34s; run duration: 2m15s
+
+Observed deployment lines:
+Network lab03-39505104091-1_frontend  Created
+Network lab03-39505104091-1_database  Created
+Volume "lab03-39505104091-1_postgres_data"  Created
+Container lab03-39505104091-1-db-1  Healthy
+Container lab03-39505104091-1-backend-1  Healthy
+Container lab03-39505104091-1-frontend-1  Started
+curl: (52) Empty reply from server
+{"database":"ok","status":"ok"}
+health + POST + GET verified for ci-39505104091-1

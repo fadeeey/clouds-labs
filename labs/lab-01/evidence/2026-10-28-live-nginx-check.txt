@@ -1,0 +1,11 @@
+# Read-only validation of the existing local Lab 1 Nginx service
+# Date: 2026-10-28
+# Commands target only the existing compose.yaml project; no service was recreated.
+
+$ docker compose -f compose.yaml exec -T frontend nginx -t
+nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+nginx: configuration file /etc/nginx/nginx.conf test is successful
+
+$ curl -k --resolve localhost:8443:127.0.0.1 https://localhost:8443/healthz
+{"database":"ok","status":"ok"}
+HTTP 200

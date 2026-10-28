@@ -1,0 +1,56 @@
+{
+  "limits": {
+    "backend_cpu": "0.50",
+    "backend_memory": "256m"
+  },
+  "healthy_before_load": true,
+  "cpu_stat_before": {
+    "usage_usec": 574705,
+    "user_usec": 534009,
+    "system_usec": 40695,
+    "nice_usec": 0,
+    "nr_periods": 26,
+    "nr_throttled": 10,
+    "throttled_usec": 495746,
+    "nr_bursts": 0,
+    "burst_usec": 0
+  },
+  "load": {
+    "requests": 962,
+    "bytes": 1041855620,
+    "statuses": {
+      "200": 962
+    },
+    "error_count": 0,
+    "errors": [],
+    "duration_seconds": 30,
+    "elapsed_seconds": 31.001,
+    "workers": 8,
+    "latency_ms": {
+      "median": 220.5,
+      "p95": 387.3,
+      "max": 606.7
+    },
+    "average_response_bytes": 1083010
+  },
+  "cpu_stat_after": {
+    "usage_usec": 15625183,
+    "user_usec": 12170220,
+    "system_usec": 3454962,
+    "nice_usec": 0,
+    "nr_periods": 335,
+    "nr_throttled": 311,
+    "throttled_usec": 65888486,
+    "nr_bursts": 0,
+    "burst_usec": 0
+  },
+  "health_after": {
+    "http_status": 200,
+    "body": {
+      "database": "ok",
+      "status": "ok"
+    }
+  },
+  "phase": "cpu-050-30s",
+  "recorded_at_utc": "2026-10-28T16:22:16.936920+00:00"
+}

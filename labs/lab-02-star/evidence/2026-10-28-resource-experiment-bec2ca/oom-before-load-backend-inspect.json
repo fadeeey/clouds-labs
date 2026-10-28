@@ -1,0 +1,37 @@
+{
+  "service": "backend",
+  "container_id": "402830363a99a90007a4676b98b4d0549a5f8b7b0954027ea59161d42c14ef83",
+  "name": "lab02star-20261028-bec2ca-backend-1",
+  "image_id": "sha256:d855c32c2cdca54699a9e2678a7fa5487f1ee6c9bdc73d968671ca44c5fe5161",
+  "restart_count": 0,
+  "limits": {
+    "NanoCpus": 500000000,
+    "Memory": 67108864,
+    "MemorySwap": 67108864
+  },
+  "state": {
+    "Status": "running",
+    "Running": true,
+    "Paused": false,
+    "Restarting": false,
+    "OOMKilled": false,
+    "Dead": false,
+    "Pid": 39685,
+    "ExitCode": 0,
+    "Error": "",
+    "StartedAt": "2026-10-28T16:22:20.214900135Z",
+    "FinishedAt": "0001-01-01T00:00:00Z",
+    "Health": {
+      "Status": "healthy",
+      "FailingStreak": 0,
+      "Log": [
+        {
+          "Start": "2026-10-28T16:22:25.272231763Z",
+          "End": "2026-10-28T16:22:25.541924263Z",
+          "ExitCode": 0,
+          "Output": ""
+        }
+      ]
+    }
+  }
+}

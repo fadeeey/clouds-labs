@@ -1,0 +1,41 @@
+{
+  "limits": {
+    "db": "0.50 CPU / 256m",
+    "backend": "0.50 CPU / 256m",
+    "frontend": "0.25 CPU / 64m"
+  },
+  "health_before": {
+    "http_status": 200,
+    "body": {
+      "database": "ok",
+      "status": "ok"
+    }
+  },
+  "load": {
+    "requests": 474,
+    "bytes": 513346740,
+    "statuses": {
+      "200": 474
+    },
+    "error_count": 0,
+    "errors": [],
+    "duration_seconds": 15,
+    "elapsed_seconds": 15.157,
+    "workers": 8,
+    "latency_ms": {
+      "median": 222.7,
+      "p95": 409.3,
+      "max": 598.6
+    },
+    "average_response_bytes": 1083010
+  },
+  "health_after": {
+    "http_status": 200,
+    "body": {
+      "database": "ok",
+      "status": "ok"
+    }
+  },
+  "phase": "baseline-15s",
+  "recorded_at_utc": "2026-10-28T16:20:27.187939+00:00"
+}

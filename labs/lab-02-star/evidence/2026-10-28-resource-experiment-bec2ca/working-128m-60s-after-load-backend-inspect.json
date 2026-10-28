@@ -1,0 +1,61 @@
+{
+  "service": "backend",
+  "container_id": "6f3bb09f61a1f6f755abac052e896d14502e24f747619c3359b5bcbc77e6ccc0",
+  "name": "lab02star-20261028-bec2ca-backend-1",
+  "image_id": "sha256:d855c32c2cdca54699a9e2678a7fa5487f1ee6c9bdc73d968671ca44c5fe5161",
+  "restart_count": 0,
+  "limits": {
+    "NanoCpus": 500000000,
+    "Memory": 134217728,
+    "MemorySwap": 536870912
+  },
+  "state": {
+    "Status": "running",
+    "Running": true,
+    "Paused": false,
+    "Restarting": false,
+    "OOMKilled": false,
+    "Dead": false,
+    "Pid": 41466,
+    "ExitCode": 0,
+    "Error": "",
+    "StartedAt": "2026-10-28T16:23:17.610818634Z",
+    "FinishedAt": "0001-01-01T00:00:00Z",
+    "Health": {
+      "Status": "healthy",
+      "FailingStreak": 0,
+      "Log": [
+        {
+          "Start": "2026-10-28T16:23:43.999938174Z",
+          "End": "2026-10-28T16:23:45.012750549Z",
+          "ExitCode": 0,
+          "Output": ""
+        },
+        {
+          "Start": "2026-10-28T16:23:55.013312054Z",
+          "End": "2026-10-28T16:23:56.18947643Z",
+          "ExitCode": 0,
+          "Output": ""
+        },
+        {
+          "Start": "2026-10-28T16:24:06.190310712Z",
+          "End": "2026-10-28T16:24:07.209404337Z",
+          "ExitCode": 0,
+          "Output": ""
+        },
+        {
+          "Start": "2026-10-28T16:24:17.210080175Z",
+          "End": "2026-10-28T16:24:18.307506426Z",
+          "ExitCode": 0,
+          "Output": ""
+        },
+        {
+          "Start": "2026-10-28T16:24:28.30856625Z",
+          "End": "2026-10-28T16:24:29.196281209Z",
+          "ExitCode": 0,
+          "Output": ""
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,208 @@
+{
+  "limits": {
+    "backend_cpu": "0.50",
+    "backend_memory": "64m",
+    "backend_memswap": "64m"
+  },
+  "healthy_before_load": true,
+  "state_before_load": {
+    "service": "backend",
+    "container_id": "402830363a99a90007a4676b98b4d0549a5f8b7b0954027ea59161d42c14ef83",
+    "name": "lab02star-20261028-bec2ca-backend-1",
+    "image_id": "sha256:d855c32c2cdca54699a9e2678a7fa5487f1ee6c9bdc73d968671ca44c5fe5161",
+    "restart_count": 0,
+    "limits": {
+      "NanoCpus": 500000000,
+      "Memory": 67108864,
+      "MemorySwap": 67108864
+    },
+    "state": {
+      "Status": "running",
+      "Running": true,
+      "Paused": false,
+      "Restarting": false,
+      "OOMKilled": false,
+      "Dead": false,
+      "Pid": 39685,
+      "ExitCode": 0,
+      "Error": "",
+      "StartedAt": "2026-10-28T16:22:20.214900135Z",
+      "FinishedAt": "0001-01-01T00:00:00Z",
+      "Health": {
+        "Status": "healthy",
+        "FailingStreak": 0,
+        "Log": [
+          {
+            "Start": "2026-10-28T16:22:25.272231763Z",
+            "End": "2026-10-28T16:22:25.541924263Z",
+            "ExitCode": 0,
+            "Output": ""
+          }
+        ]
+      }
+    }
+  },
+  "load": {
+    "requests": 122,
+    "bytes": 8681978,
+    "statuses": {
+      "200": 8,
+      "502": 114
+    },
+    "error_count": 138,
+    "errors": [
+      {
+        "type": "HTTPError",
+        "message": "HTTP 502",
+        "latency_ms": 21.2
+      },
+      {
+        "type": "HTTPError",
+        "message": "HTTP 502",
+        "latency_ms": 96.6
+      },
+      {
+        "type": "HTTPError",
+        "message": "HTTP 502",
+        "latency_ms": 228.6
+      },
+      {
+        "type": "HTTPError",
+        "message": "HTTP 502",
+        "latency_ms": 14.8
+      },
+      {
+        "type": "HTTPError",
+        "message": "HTTP 502",
+        "latency_ms": 96.8
+      },
+      {
+        "type": "HTTPError",
+        "message": "HTTP 502",
+        "latency_ms": 2.0
+      },
+      {
+        "type": "HTTPError",
+        "message": "HTTP 502",
+        "latency_ms": 127.9
+      },
+      {
+        "type": "HTTPError",
+        "message": "HTTP 502",
+        "latency_ms": 117.1
+      },
+      {
+        "type": "HTTPError",
+        "message": "HTTP 502",
+        "latency_ms": 1.2
+      },
+      {
+        "type": "HTTPError",
+        "message": "HTTP 502",
+        "latency_ms": 2.7
+      },
+      {
+        "type": "HTTPError",
+        "message": "HTTP 502",
+        "latency_ms": 2.1
+      },
+      {
+        "type": "HTTPError",
+        "message": "HTTP 502",
+        "latency_ms": 2.4
+      },
+      {
+        "type": "HTTPError",
+        "message": "HTTP 502",
+        "latency_ms": 2.1
+      },
+      {
+        "type": "HTTPError",
+        "message": "HTTP 502",
+        "latency_ms": 2.0
+      },
+      {
+        "type": "HTTPError",
+        "message": "HTTP 502",
+        "latency_ms": 2.7
+      },
+      {
+        "type": "HTTPError",
+        "message": "HTTP 502",
+        "latency_ms": 3.6
+      },
+      {
+        "type": "HTTPError",
+        "message": "HTTP 502",
+        "latency_ms": 1.6
+      },
+      {
+        "type": "HTTPError",
+        "message": "HTTP 502",
+        "latency_ms": 2.2
+      },
+      {
+        "type": "HTTPError",
+        "message": "HTTP 502",
+        "latency_ms": 1.2
+      },
+      {
+        "type": "HTTPError",
+        "message": "HTTP 502",
+        "latency_ms": 2.3
+      }
+    ],
+    "duration_seconds": 30,
+    "elapsed_seconds": 37.066,
+    "workers": 8,
+    "latency_ms": {
+      "median": 335.4,
+      "p95": 416.9,
+      "max": 430.3
+    },
+    "average_response_bytes": 71164
+  },
+  "state_after_load": {
+    "service": "backend",
+    "container_id": "402830363a99a90007a4676b98b4d0549a5f8b7b0954027ea59161d42c14ef83",
+    "name": "lab02star-20261028-bec2ca-backend-1",
+    "image_id": "sha256:d855c32c2cdca54699a9e2678a7fa5487f1ee6c9bdc73d968671ca44c5fe5161",
+    "restart_count": 0,
+    "limits": {
+      "NanoCpus": 500000000,
+      "Memory": 67108864,
+      "MemorySwap": 67108864
+    },
+    "state": {
+      "Status": "exited",
+      "Running": false,
+      "Paused": false,
+      "Restarting": false,
+      "OOMKilled": true,
+      "Dead": false,
+      "Pid": 0,
+      "ExitCode": 137,
+      "Error": "",
+      "StartedAt": "2026-10-28T16:22:20.214900135Z",
+      "FinishedAt": "2026-10-28T16:22:34.532748253Z",
+      "Health": {
+        "Status": "unhealthy",
+        "FailingStreak": 0,
+        "Log": [
+          {
+            "Start": "2026-10-28T16:22:25.272231763Z",
+            "End": "2026-10-28T16:22:25.541924263Z",
+            "ExitCode": 0,
+            "Output": ""
+          }
+        ]
+      }
+    }
+  },
+  "health_after": {
+    "error": "HTTPError",
+    "message": "HTTP Error 502: Bad Gateway"
+  },
+  "phase": "oom-064m-30s",
+  "recorded_at_utc": "2026-10-28T16:23:17.466943+00:00"
+}

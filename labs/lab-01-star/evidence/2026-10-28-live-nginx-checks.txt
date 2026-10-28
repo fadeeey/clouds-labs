@@ -1,0 +1,8 @@
+# Live read-only checks against the local Lab 1 Nginx service
+# Date: 2026-10-28
+# Target: https://localhost:8443 (loopback only; certificate validation disabled for the local test certificate)
+# Response bodies and headers were discarded; no credentials were sent.
+
+GET /.env -> 404
+GET /docs/../../etc/passwd (sent with --path-as-is) -> 400
+GET /admin (unauthenticated) -> 401

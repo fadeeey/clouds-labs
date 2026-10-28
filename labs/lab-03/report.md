@@ -47,6 +47,10 @@ Trivy предупреждает, что сторонние SBOM могут да
 
 Оба образа просканированы одним Trivy DB snapshot (`2026-10-20T19:12:26Z`). High findings остаются видимыми в summary; Critical gate настроен на обе публикуемые images и не ослаблен. GHCR publish log — источник manifest digest; локальный `docker image inspect` ID относится к конфигурации образа и не подменяет registry digest.
 
+### Run после исправлений кода
+
+[Run #39505104091](https://github.com/fadeeey/clouds-labs/actions/runs/39505104091) на коммите `8945074` завершился успешно за 2 мин 15 с: прошли validation, build/scan/publish и отдельный deploy по digest. Summary показал 0 Critical / 48 High у backend и 0 Critical / 45 High у frontend. В [сохранённом выводе deployment job](evidence/2026-10-28-ci-deployment-log.txt), прочитанном 28 октября из реального раскрытого шага Actions, есть ответ `{"database":"ok","status":"ok"}` и строка `health + POST + GET verified for ci-39505104091-1`. Перед успешным повтором в том же выводе зафиксирован `curl: (52) Empty reply from server`; workflow обрабатывает такую временную ошибку ограниченными повторными попытками. Текстовый файл содержит наблюдаемый вывод, а не снимок экрана.
+
 ## Проверки защитных gates
 
 На отдельной ветке [`work/lab-03-negative-test`](https://github.com/fadeeey/clouds-labs/tree/work/lab-03-negative-test) run [#39495954222](https://github.com/fadeeey/clouds-labs/actions/runs/39495954222) намеренно проверял неправильное ожидание `503` вместо фактического `200`. Один из трёх PostgreSQL integration tests упал с `AssertionError: 200 != 503`; job validation завершился с ошибкой, а build/publish и deploy jobs получили статус `skipped`.

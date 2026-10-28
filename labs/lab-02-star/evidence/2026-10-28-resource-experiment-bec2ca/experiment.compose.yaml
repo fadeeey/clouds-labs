@@ -1,0 +1,69 @@
+services:
+  db:
+    image: postgres:17.6-alpine@sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94
+    environment:
+      POSTGRES_DB: tasks
+      POSTGRES_USER: tasks
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?temporary experiment password is required}
+    cpus: ${DB_CPUS:-0.50}
+    mem_limit: ${DB_MEM_LIMIT:-256m}
+    restart: "no"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - database
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tasks -d tasks"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+
+  backend:
+    image: clouds-lab02-star-backend:${EXPERIMENT_TAG:?unique experiment image tag is required}
+    build:
+      context: ../..
+      dockerfile: docker/lab-02/Dockerfile.good
+    environment:
+      DATABASE_URL: postgresql://tasks:${POSTGRES_PASSWORD:?temporary experiment password is required}@db:5432/tasks
+      BACKEND_ID: lab-02-star
+    depends_on:
+      db:
+        condition: service_healthy
+    cpus: ${BACKEND_CPUS:-0.50}
+    mem_limit: ${BACKEND_MEM_LIMIT:-256m}
+    memswap_limit: ${BACKEND_MEMSWAP_LIMIT:-512m}
+    restart: "no"
+    networks:
+      - frontend
+      - database
+
+  frontend:
+    image: clouds-lab02-star-frontend:${EXPERIMENT_TAG:?unique experiment image tag is required}
+    build:
+      context: ../..
+      dockerfile: docker/lab-02/Dockerfile.frontend
+    depends_on:
+      backend:
+        condition: service_healthy
+    cpus: ${FRONTEND_CPUS:-0.25}
+    mem_limit: ${FRONTEND_MEM_LIMIT:-64m}
+    restart: "no"
+    ports:
+      - "127.0.0.1::80"
+    volumes:
+      - ../../docker/lab-02/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1/healthz"]
+      interval: 3s
+      timeout: 3s
+      retries: 10
+    networks:
+      - frontend
+
+networks:
+  frontend: {}
+  database:
+    internal: true
+
+volumes:
+  postgres_data: {}

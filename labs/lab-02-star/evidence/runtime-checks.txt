@@ -8,7 +8,14 @@
 Результат: restart_count=1, БД healthy, healthz {"database":"ok","status":"ok"}; запись id=6 осталась.
 
 Backend CPU-нагрузка:
-  docker compose exec -T backend python -c 'import time; end=time.time()+12; x=0\nwhile time.time()<end: x=(x+1)%1000003\nprint("bounded backend CPU loop complete")'
+  docker compose exec -T backend python - <<'PY'
+import time
+end = time.time() + 12
+x = 0
+while time.time() < end:
+    x = (x + 1) % 1000003
+print("bounded backend CPU loop complete")
+PY
 Во время цикла шесть GET /healthz: 200, измеренное время 35.2, 36.3, 95.2, 78.2, 76.9 и 66.9 ms.
 `docker stats`: backend CPU 49.62–52.07%, RAM 44.01–44.61 MiB / 128 MiB.
 `cpu.stat`: nr_throttled 200 -> 321; throttled_usec 10412466 -> 17430192.

@@ -1,0 +1,206 @@
+$ docker compose --project-name lab02star-20261028-bec2ca -f '/Users/fadeeey/Учёба/26-27 год/Облака/clouds-labs/labs/lab-02-star/experiment.compose.yaml' --env-file /var/folders/5y/1cpsr0vx16n8kkzvrf375qbw0000gn/T/lab02star-20261028-bec2ca-gd7mmsr6/experiment.env config --quiet
+$ docker compose --project-name lab02star-20261028-bec2ca -f '/Users/fadeeey/Учёба/26-27 год/Облака/clouds-labs/labs/lab-02-star/experiment.compose.yaml' --env-file /var/folders/5y/1cpsr0vx16n8kkzvrf375qbw0000gn/T/lab02star-20261028-bec2ca-gd7mmsr6/experiment.env up -d --build
+ Image clouds-lab02-star-frontend:20261028-bec2ca Building 
+ Image clouds-lab02-star-backend:20261028-bec2ca Building 
+#1 [internal] load local bake definitions
+#1 reading from stdin 1.21kB done
+#1 DONE 0.0s
+
+#2 [backend internal] load build definition from Dockerfile.good
+#2 transferring dockerfile: 980B done
+#2 DONE 0.0s
+
+#3 [frontend internal] load build definition from Dockerfile.frontend
+#3 transferring dockerfile: 247B done
+#3 DONE 0.0s
+
+#4 [frontend internal] load metadata for docker.io/library/nginx:1.29-alpine@sha256:5616878291a2eed594aee8db4dade5878cf7edcb475e59193904b198d9b830de
+#4 DONE 0.0s
+
+#5 [frontend internal] load .dockerignore
+#5 transferring context: 110B done
+#5 DONE 0.0s
+
+#6 [frontend internal] load build context
+#6 transferring context: 3.59kB done
+#6 DONE 0.0s
+
+#7 [frontend 1/3] FROM docker.io/library/nginx:1.29-alpine@sha256:5616878291a2eed594aee8db4dade5878cf7edcb475e59193904b198d9b830de
+#7 resolve docker.io/library/nginx:1.29-alpine@sha256:5616878291a2eed594aee8db4dade5878cf7edcb475e59193904b198d9b830de done
+#7 DONE 0.0s
+
+#8 [frontend 2/3] COPY app/frontend/ /usr/share/nginx/html/
+#8 CACHED
+
+#9 [frontend 3/3] COPY docker/lab-01/nginx.conf /etc/nginx/conf.d/default.conf
+#9 CACHED
+
+#10 [frontend] exporting to image
+#10 exporting layers done
+#10 exporting manifest sha256:3419dc9da8749395108f888d05f8dea28c06a883ecacd59fd0e4ebb8c5443d83 done
+#10 exporting config sha256:542729d7976e0fc0676cadd772e69d3ce2062739190f3e29e2be9134bf9cca42 done
+#10 exporting attestation manifest sha256:cdd69288f68e2a48d4787481fae8fb6d37b7d519629cf14fc810be12a7e2b0b8 done
+#10 exporting manifest list sha256:6e72cccb8bcdf19936842f3bbdaeff83dc8687e93a3a166842745be8cd7c4912 done
+#10 naming to docker.io/library/clouds-lab02-star-frontend:20261028-bec2ca done
+#10 unpacking to docker.io/library/clouds-lab02-star-frontend:20261028-bec2ca done
+#10 DONE 0.0s
+
+#11 [backend internal] load metadata for docker.io/library/python:3.14-slim-trixie@sha256:a2b82f3c48559aa0a8446d9af49826b6e2b2016f4cd2afabfe6013ec53729170
+#11 ...
+
+#12 [frontend] resolving provenance for metadata file
+#12 DONE 0.0s
+
+#11 [backend internal] load metadata for docker.io/library/python:3.14-slim-trixie@sha256:a2b82f3c48559aa0a8446d9af49826b6e2b2016f4cd2afabfe6013ec53729170
+#11 DONE 1.0s
+
+#5 [backend internal] load .dockerignore
+#5 CACHED
+
+#13 [backend internal] load build context
+#13 transferring context: 4.15kB done
+#13 DONE 0.0s
+
+#14 [backend builder 1/4] FROM docker.io/library/python:3.14-slim-trixie@sha256:a2b82f3c48559aa0a8446d9af49826b6e2b2016f4cd2afabfe6013ec53729170
+#14 resolve docker.io/library/python:3.14-slim-trixie@sha256:a2b82f3c48559aa0a8446d9af49826b6e2b2016f4cd2afabfe6013ec53729170 0.0s done
+#14 DONE 0.0s
+
+#15 [backend builder 2/4] WORKDIR /build
+#15 CACHED
+
+#16 [backend builder 4/4] RUN python -m pip install --no-cache-dir --prefix=/install -r requirements.txt
+#16 CACHED
+
+#17 [backend runtime 2/6] WORKDIR /app
+#17 CACHED
+
+#18 [backend builder 3/4] COPY requirements.txt ./
+#18 CACHED
+
+#19 [backend runtime 4/6] COPY --from=builder /install/ /usr/local/
+#19 CACHED
+
+#20 [backend runtime 3/6] RUN groupadd --system app && useradd --system --gid app --home-dir /app app
+#20 CACHED
+
+#21 [backend runtime 5/6] COPY --chown=app:app app/backend/server.py ./app/backend/server.py
+#21 CACHED
+
+#22 [backend runtime 6/6] COPY --chown=app:app app/frontend/ ./app/frontend/
+#22 CACHED
+
+#23 [backend] exporting to image
+#23 exporting layers done
+#23 exporting manifest sha256:7050db1c477855a5f6e8881ee3735f01fc7a6cff526e251d3bd5af08843ddd0e done
+#23 exporting config sha256:af876f152e021e2b0fd0ffc1fc9f055b060a7ea995f7a52f889df1a5bd7ab405 done
+#23 exporting attestation manifest sha256:1bc49f56da824de10173ed5453837602cae3334bb8a499a2a56132b99ac339e1 done
+#23 exporting manifest list sha256:d855c32c2cdca54699a9e2678a7fa5487f1ee6c9bdc73d968671ca44c5fe5161 done
+#23 naming to docker.io/library/clouds-lab02-star-backend:20261028-bec2ca done
+#23 unpacking to docker.io/library/clouds-lab02-star-backend:20261028-bec2ca done
+#23 DONE 0.0s
+
+#24 [backend] resolving provenance for metadata file
+#24 DONE 0.0s
+ Image clouds-lab02-star-backend:20261028-bec2ca Built 
+ Image clouds-lab02-star-frontend:20261028-bec2ca Built 
+ Volume lab02star-20261028-bec2ca_postgres_data Creating 
+ Network lab02star-20261028-bec2ca_database Creating 
+ Network lab02star-20261028-bec2ca_frontend Creating 
+ Network lab02star-20261028-bec2ca_database Creating 
+ Volume lab02star-20261028-bec2ca_postgres_data Creating 
+ Network lab02star-20261028-bec2ca_frontend Creating 
+ Volume lab02star-20261028-bec2ca_postgres_data Created 
+ Volume lab02star-20261028-bec2ca_postgres_data Created 
+ Network lab02star-20261028-bec2ca_database Created 
+ Network lab02star-20261028-bec2ca_database Created 
+ Container lab02star-20261028-bec2ca-db-1 Creating 
+ Network lab02star-20261028-bec2ca_frontend Created 
+ Network lab02star-20261028-bec2ca_frontend Created 
+ Container lab02star-20261028-bec2ca-db-1 Created 
+ Container lab02star-20261028-bec2ca-backend-1 Creating 
+ Container lab02star-20261028-bec2ca-backend-1 Created 
+ Container lab02star-20261028-bec2ca-frontend-1 Creating 
+ Container lab02star-20261028-bec2ca-frontend-1 Created 
+ Container lab02star-20261028-bec2ca-db-1 Starting 
+ Container lab02star-20261028-bec2ca-db-1 Started 
+ Container lab02star-20261028-bec2ca-db-1 Waiting 
+ Container lab02star-20261028-bec2ca-db-1 Healthy 
+ Container lab02star-20261028-bec2ca-backend-1 Starting 
+ Container lab02star-20261028-bec2ca-backend-1 Started 
+ Container lab02star-20261028-bec2ca-backend-1 Waiting 
+ Container lab02star-20261028-bec2ca-backend-1 Healthy 
+ Container lab02star-20261028-bec2ca-frontend-1 Starting 
+ Container lab02star-20261028-bec2ca-frontend-1 Started
+Seed: 4000 synthetic titles, 200 characters each; SQL is sent on psql stdin.
+$ docker compose --project-name lab02star-20261028-bec2ca -f '/Users/fadeeey/Учёба/26-27 год/Облака/clouds-labs/labs/lab-02-star/experiment.compose.yaml' --env-file /var/folders/5y/1cpsr0vx16n8kkzvrf375qbw0000gn/T/lab02star-20261028-bec2ca-gd7mmsr6/experiment.env exec -T db psql -X -U tasks -d tasks -v ON_ERROR_STOP=1 -v seed_prefix=fixture-lab02star-20261028-bec2ca-
+INSERT 0 4000
+LOAD baseline-15s: {"requests": 474, "bytes": 513346740, "statuses": {"200": 474}, "error_count": 0, "errors": [], "duration_seconds": 15, "elapsed_seconds": 15.157, "workers": 8, "latency_ms": {"median": 222.7, "p95": 409.3, "max": 598.6}, "average_response_bytes": 1083010}
+$ docker compose --project-name lab02star-20261028-bec2ca -f '/Users/fadeeey/Учёба/26-27 год/Облака/clouds-labs/labs/lab-02-star/experiment.compose.yaml' --env-file /var/folders/5y/1cpsr0vx16n8kkzvrf375qbw0000gn/T/lab02star-20261028-bec2ca-gd7mmsr6/experiment.env up -d --no-deps --force-recreate backend
+ Container lab02star-20261028-bec2ca-backend-1 Recreate 
+ Container lab02star-20261028-bec2ca-backend-1 Recreated 
+ Container lab02star-20261028-bec2ca-backend-1 Starting 
+ Container lab02star-20261028-bec2ca-backend-1 Started
+$ docker compose --project-name lab02star-20261028-bec2ca -f '/Users/fadeeey/Учёба/26-27 год/Облака/clouds-labs/labs/lab-02-star/experiment.compose.yaml' --env-file /var/folders/5y/1cpsr0vx16n8kkzvrf375qbw0000gn/T/lab02star-20261028-bec2ca-gd7mmsr6/experiment.env up -d --no-deps --force-recreate frontend
+ Container lab02star-20261028-bec2ca-frontend-1 Recreate 
+ Container lab02star-20261028-bec2ca-frontend-1 Recreated 
+ Container lab02star-20261028-bec2ca-frontend-1 Starting 
+ Container lab02star-20261028-bec2ca-frontend-1 Started
+LOAD cpu-010-30s: {"requests": 97, "bytes": 105051970, "statuses": {"200": 97}, "error_count": 0, "errors": [], "duration_seconds": 30, "elapsed_seconds": 34.495, "workers": 8, "latency_ms": {"median": 2504.4, "p95": 4600.6, "max": 5008.9}, "average_response_bytes": 1083010}
+$ docker compose --project-name lab02star-20261028-bec2ca -f '/Users/fadeeey/Учёба/26-27 год/Облака/clouds-labs/labs/lab-02-star/experiment.compose.yaml' --env-file /var/folders/5y/1cpsr0vx16n8kkzvrf375qbw0000gn/T/lab02star-20261028-bec2ca-gd7mmsr6/experiment.env up -d --no-deps --force-recreate backend
+ Container lab02star-20261028-bec2ca-backend-1 Recreate 
+ Container lab02star-20261028-bec2ca-backend-1 Recreated 
+ Container lab02star-20261028-bec2ca-backend-1 Starting 
+ Container lab02star-20261028-bec2ca-backend-1 Started
+$ docker compose --project-name lab02star-20261028-bec2ca -f '/Users/fadeeey/Учёба/26-27 год/Облака/clouds-labs/labs/lab-02-star/experiment.compose.yaml' --env-file /var/folders/5y/1cpsr0vx16n8kkzvrf375qbw0000gn/T/lab02star-20261028-bec2ca-gd7mmsr6/experiment.env up -d --no-deps --force-recreate frontend
+ Container lab02star-20261028-bec2ca-frontend-1 Recreate 
+ Container lab02star-20261028-bec2ca-frontend-1 Recreated 
+ Container lab02star-20261028-bec2ca-frontend-1 Starting 
+ Container lab02star-20261028-bec2ca-frontend-1 Started
+LOAD cpu-050-30s: {"requests": 962, "bytes": 1041855620, "statuses": {"200": 962}, "error_count": 0, "errors": [], "duration_seconds": 30, "elapsed_seconds": 31.001, "workers": 8, "latency_ms": {"median": 220.5, "p95": 387.3, "max": 606.7}, "average_response_bytes": 1083010}
+$ docker compose --project-name lab02star-20261028-bec2ca -f '/Users/fadeeey/Учёба/26-27 год/Облака/clouds-labs/labs/lab-02-star/experiment.compose.yaml' --env-file /var/folders/5y/1cpsr0vx16n8kkzvrf375qbw0000gn/T/lab02star-20261028-bec2ca-gd7mmsr6/experiment.env up -d --no-deps --force-recreate backend
+ Container lab02star-20261028-bec2ca-backend-1 Recreate 
+ Container lab02star-20261028-bec2ca-backend-1 Recreated 
+ Container lab02star-20261028-bec2ca-backend-1 Starting 
+ Container lab02star-20261028-bec2ca-backend-1 Started
+$ docker compose --project-name lab02star-20261028-bec2ca -f '/Users/fadeeey/Учёба/26-27 год/Облака/clouds-labs/labs/lab-02-star/experiment.compose.yaml' --env-file /var/folders/5y/1cpsr0vx16n8kkzvrf375qbw0000gn/T/lab02star-20261028-bec2ca-gd7mmsr6/experiment.env up -d --no-deps --force-recreate frontend
+ Container lab02star-20261028-bec2ca-frontend-1 Recreate 
+ Container lab02star-20261028-bec2ca-frontend-1 Recreated 
+ Container lab02star-20261028-bec2ca-frontend-1 Starting 
+ Container lab02star-20261028-bec2ca-frontend-1 Started
+LOAD oom-064m-30s: {"requests": 122, "bytes": 8681978, "statuses": {"200": 8, "502": 114}, "error_count": 138, "errors": [{"type": "HTTPError", "message": "HTTP 502", "latency_ms": 21.2}, {"type": "HTTPError", "message": "HTTP 502", "latency_ms": 96.6}, {"type": "HTTPError", "message": "HTTP 502", "latency_ms": 228.6}, {"type": "HTTPError", "message": "HTTP 502", "latency_ms": 14.8}, {"type": "HTTPError", "message": "HTTP 502", "latency_ms": 96.8}, {"type": "HTTPError", "message": "HTTP 502", "latency_ms": 2.0}, {"type": "HTTPError", "message": "HTTP 502", "latency_ms": 127.9}, {"type": "HTTPError", "message": "HTTP 502", "latency_ms": 117.1}, {"type": "HTTPError", "message": "HTTP 502", "latency_ms": 1.2}, {"type": "HTTPError", "message": "HTTP 502", "latency_ms": 2.7}, {"type": "HTTPError", "message": "HTTP 502", "latency_ms": 2.1}, {"type": "HTTPError", "message": "HTTP 502", "latency_ms": 2.4}, {"type": "HTTPError", "message": "HTTP 502", "latency_ms": 2.1}, {"type": "HTTPError", "message": "HTTP 502", "latency_ms": 2.0}, {"type": "HTTPError", "message": "HTTP 502", "latency_ms": 2.7}, {"type": "HTTPError", "message": "HTTP 502", "latency_ms": 3.6}, {"type": "HTTPError", "message": "HTTP 502", "latency_ms": 1.6}, {"type": "HTTPError", "message": "HTTP 502", "latency_ms": 2.2}, {"type": "HTTPError", "message": "HTTP 502", "latency_ms": 1.2}, {"type": "HTTPError", "message": "HTTP 502", "latency_ms": 2.3}], "duration_seconds": 30, "elapsed_seconds": 37.066, "workers": 8, "latency_ms": {"median": 335.4, "p95": 416.9, "max": 430.3}, "average_response_bytes": 71164}
+$ docker compose --project-name lab02star-20261028-bec2ca -f '/Users/fadeeey/Учёба/26-27 год/Облака/clouds-labs/labs/lab-02-star/experiment.compose.yaml' --env-file /var/folders/5y/1cpsr0vx16n8kkzvrf375qbw0000gn/T/lab02star-20261028-bec2ca-gd7mmsr6/experiment.env up -d --no-deps --force-recreate backend
+ Container lab02star-20261028-bec2ca-backend-1 Recreate 
+ Container lab02star-20261028-bec2ca-backend-1 Recreated 
+ Container lab02star-20261028-bec2ca-backend-1 Starting 
+ Container lab02star-20261028-bec2ca-backend-1 Started
+$ docker compose --project-name lab02star-20261028-bec2ca -f '/Users/fadeeey/Учёба/26-27 год/Облака/clouds-labs/labs/lab-02-star/experiment.compose.yaml' --env-file /var/folders/5y/1cpsr0vx16n8kkzvrf375qbw0000gn/T/lab02star-20261028-bec2ca-gd7mmsr6/experiment.env up -d --no-deps --force-recreate frontend
+ Container lab02star-20261028-bec2ca-frontend-1 Recreate 
+ Container lab02star-20261028-bec2ca-frontend-1 Recreated 
+ Container lab02star-20261028-bec2ca-frontend-1 Starting 
+ Container lab02star-20261028-bec2ca-frontend-1 Started
+LOAD working-128m-60s: {"requests": 1907, "bytes": 2065300070, "statuses": {"200": 1907}, "error_count": 0, "errors": [], "duration_seconds": 60, "elapsed_seconds": 60.173, "workers": 8, "latency_ms": {"median": 221.6, "p95": 387.8, "max": 691.6}, "average_response_bytes": 1083010}
+$ docker compose --project-name lab02star-20261028-bec2ca -f '/Users/fadeeey/Учёба/26-27 год/Облака/clouds-labs/labs/lab-02-star/experiment.compose.yaml' --env-file /var/folders/5y/1cpsr0vx16n8kkzvrf375qbw0000gn/T/lab02star-20261028-bec2ca-gd7mmsr6/experiment.env down --volumes --remove-orphans
+ Container lab02star-20261028-bec2ca-frontend-1 Stopping 
+ Container lab02star-20261028-bec2ca-frontend-1 Stopped 
+ Container lab02star-20261028-bec2ca-frontend-1 Removing 
+ Container lab02star-20261028-bec2ca-frontend-1 Removed 
+ Container lab02star-20261028-bec2ca-backend-1 Stopping 
+ Container lab02star-20261028-bec2ca-backend-1 Stopped 
+ Container lab02star-20261028-bec2ca-backend-1 Removing 
+ Container lab02star-20261028-bec2ca-backend-1 Removed 
+ Container lab02star-20261028-bec2ca-db-1 Stopping 
+ Container lab02star-20261028-bec2ca-db-1 Stopped 
+ Container lab02star-20261028-bec2ca-db-1 Removing 
+ Container lab02star-20261028-bec2ca-db-1 Removed 
+ Network lab02star-20261028-bec2ca_frontend Removing 
+ Network lab02star-20261028-bec2ca_database Removing 
+ Volume lab02star-20261028-bec2ca_postgres_data Removing 
+ Volume lab02star-20261028-bec2ca_postgres_data Removed 
+ Network lab02star-20261028-bec2ca_frontend Removed 
+ Network lab02star-20261028-bec2ca_database Removed
+$ docker image rm clouds-lab02-star-backend:20261028-bec2ca clouds-lab02-star-frontend:20261028-bec2ca
+Untagged: clouds-lab02-star-backend:20261028-bec2ca
+Deleted: sha256:d855c32c2cdca54699a9e2678a7fa5487f1ee6c9bdc73d968671ca44c5fe5161
+Untagged: clouds-lab02-star-frontend:20261028-bec2ca
+Deleted: sha256:6e72cccb8bcdf19936842f3bbdaeff83dc8687e93a3a166842745be8cd7c4912
+SUMMARY: {"started_at_utc": "2026-10-28T16:19:53.850667+00:00", "project": "lab02star-20261028-bec2ca", "image_tag": "20261028-bec2ca", "phases": [{"limits": {"db": "0.50 CPU / 256m", "backend": "0.50 CPU / 256m", "frontend": "0.25 CPU / 64m"}, "health_before": {"http_status": 200, "body": {"database": "ok", "status": "ok"}}, "load": {"requests": 474, "bytes": 513346740, "statuses": {"200": 474}, "error_count": 0, "errors": [], "duration_seconds": 15, "elapsed_seconds": 15.157, "workers": 8, "latency_ms": {"median": 222.7, "p95": 409.3, "max": 598.6}, "average_response_bytes": 1083010}, "health_after": {"http_status": 200, "body": {"database": "ok", "status": "ok"}}, "phase": "baseline-15s", "recorded_at_utc": "2026-10-28T16:20:27.187939+00:00"}, {"limits": {"backend_cpu": "0.10", "backend_memory": "256m"}, "healthy_before_load": true, "cpu_stat_before": {"usage_usec": 1414013, "user_usec": 1296259, "system_usec": 117753, "nice_usec": 0, "nr_periods": 151, "nr_throttled": 139, "throttled_usec": 16398361, "nr_bursts": 0, "burst_usec": 0}, "load": {"requests": 97, "bytes": 105051970, "statuses": {"200": 97}, "error_count": 0, "errors": [], "duration_seconds": 30, "elapsed_seconds": 34.495, "workers": 8, "latency_ms": {"median": 2504.4, "p95": 4600.6, "max": 5008.9}, "average_response_bytes": 1083010}, "cpu_stat_after": {"usage_usec": 4787004, "user_usec": 3951568, "system_usec": 835435, "nice_usec": 0, "nr_periods": 497, "nr_throttled": 477, "throttled_usec": 110631772, "nr_bursts": 0, "burst_usec": 0}, "health_after": {"http_status": 200, "body": {"database": "ok", "status": "ok"}}, "phase": "cpu-010-30s", "recorded_at_utc": "2026-10-28T16:21:28.679845+00:00"}, {"limits": {"backend_cpu": "0.50", "backend_memory": "256m"}, "healthy_before_load": true, "cpu_stat_before": {"usage_usec": 574705, "user_usec": 534009, "system_usec": 40695, "nice_usec": 0, "nr_periods": 26, "nr_throttled": 10, "throttled_usec": 495746, "nr_bursts": 0, "burst_usec": 0}, "load": {"requests": 962, "bytes": 1041855620, "statuses": {"200": 962}, "error_count": 0, "errors": [], "duration_seconds": 30, "elapsed_seconds": 31.001, "workers": 8, "latency_ms": {"median": 220.5, "p95": 387.3, "max": 606.7}, "average_response_bytes": 1083010}, "cpu_stat_after": {"usage_usec": 15625183, "user_usec": 12170220, "system_usec": 3454962, "nice_usec": 0, "nr_periods": 335, "nr_throttled": 311, "throttled_usec": 65888486, "nr_bursts": 0, "burst_usec": 0}, "health_after": {"http_status": 200, "body": {"database": "ok", "status": "ok"}}, "phase": "cpu-050-30s", "recorded_at_utc": "2026-10-28T16:22:16.936920+00:00"}, {"limits": {"backend_cpu": "0.50", "backend_memory": "64m", "backend_memswap": "64m"}, "healthy_before_load": true, "state_before_load": {"service": "backend", "container_id": "402830363a99a90007a4676b98b4d0549a5f8b7b0954027ea59161d42c14ef83", "name": "lab02star-20261028-bec2ca-backend-1", "image_id": "sha256:d855c32c2cdca54699a9e2678a7fa5487f1ee6c9bdc73d968671ca44c5fe5161", "restart_count": 0, "limits": {"NanoCpus": 500000000, "Memory": 67108864, "MemorySwap": 67108864}, "state": {"Status": "running", "Running": true, "Paused": false, "Restarting": false, "OOMKilled": false, "Dead": false, "Pid": 39685, "ExitCode": 0, "Error": "", "StartedAt": "2026-10-28T16:22:20.214900135Z", "FinishedAt": "0001-01-01T00:00:00Z", "Health": {"Status": "healthy", "FailingStreak": 0, "Log": [{"Start": "2026-10-28T16:22:25.272231763Z", "End": "2026-10-28T16:22:25.541924263Z", "ExitCode": 0, "Output": ""}]}}}, "load": {"requests": 122, "bytes": 8681978, "statuses": {"200": 8, "502": 114}, "error_count": 138, "errors": [{"type": "HTTPError", "message": "HTTP 502", "latency_ms": 21.2}, {"type": "HTTPError", "message": "HTTP 502", "latency_ms": 96.6}, {"type": "HTTPError", "message": "HTTP 502", "latency_ms": 228.6}, {"type": "HTTPError", "message": "HTTP 502", "latency_ms": 14.8}, {"type": "HTTPError", "message": "HTTP 502", "latency_ms": 96.8}, {"type": "HTTPError", "message": "HTTP 502", "latency_ms": 2.0}, {"type": "HTTPError", "message": "HTTP 502", "latency_ms": 127.9}, {"type": "HTTPError", "message": "HTTP 502", "latency_ms": 117.1}, {"type": "HTTPError", "message": "HTTP 502", "latency_ms": 1.2}, {"type": "HTTPError", "message": "HTTP 502", "latency_ms": 2.7}, {"type": "HTTPError", "message": "HTTP 502", "latency_ms": 2.1}, {"type": "HTTPError", "message": "HTTP 502", "latency_ms": 2.4}, {"type": "HTTPError", "message": "HTTP 502", "latency_ms": 2.1}, {"type": "HTTPError", "message": "HTTP 502", "latency_ms": 2.0}, {"type": "HTTPError", "message": "HTTP 502", "latency_ms": 2.7}, {"type": "HTTPError", "message": "HTTP 502", "latency_ms": 3.6}, {"type": "HTTPError", "message": "HTTP 502", "latency_ms": 1.6}, {"type": "HTTPError", "message": "HTTP 502", "latency_ms": 2.2}, {"type": "HTTPError", "message": "HTTP 502", "latency_ms": 1.2}, {"type": "HTTPError", "message": "HTTP 502", "latency_ms": 2.3}], "duration_seconds": 30, "elapsed_seconds": 37.066, "workers": 8, "latency_ms": {"median": 335.4, "p95": 416.9, "max": 430.3}, "average_response_bytes": 71164}, "state_after_load": {"service": "backend", "container_id": "402830363a99a90007a4676b98b4d0549a5f8b7b0954027ea59161d42c14ef83", "name": "lab02star-20261028-bec2ca-backend-1", "image_id": "sha256:d855c32c2cdca54699a9e2678a7fa5487f1ee6c9bdc73d968671ca44c5fe5161", "restart_count": 0, "limits": {"NanoCpus": 500000000, "Memory": 67108864, "MemorySwap": 67108864}, "state": {"Status": "exited", "Running": false, "Paused": false, "Restarting": false, "OOMKilled": true, "Dead": false, "Pid": 0, "ExitCode": 137, "Error": "", "StartedAt": "2026-10-28T16:22:20.214900135Z", "FinishedAt": "2026-10-28T16:22:34.532748253Z", "Health": {"Status": "unhealthy", "FailingStreak": 0, "Log": [{"Start": "2026-10-28T16:22:25.272231763Z", "End": "2026-10-28T16:22:25.541924263Z", "ExitCode": 0, "Output": ""}]}}}, "health_after": {"error": "HTTPError", "message": "HTTP Error 502: Bad Gateway"}, "phase": "oom-064m-30s", "recorded_at_utc": "2026-10-28T16:23:17.466943+00:00"}, {"limits": {"backend_cpu": "0.50", "backend_memory": "128m"}, "healthy_before_load": true, "cpu_stat_before": {"usage_usec": 552943, "user_usec": 522002, "system_usec": 30940, "nice_usec": 0, "nr_periods": 22, "nr_throttled": 9, "throttled_usec": 456974, "nr_bursts": 0, "burst_usec": 0}, "load": {"requests": 1907, "bytes": 2065300070, "statuses": {"200": 1907}, "error_count": 0, "errors": [], "duration_seconds": 60, "elapsed_seconds": 60.173, "workers": 8, "latency_ms": {"median": 221.6, "p95": 387.8, "max": 691.6}, "average_response_bytes": 1083010}, "state_after_load": {"service": "backend", "container_id": "6f3bb09f61a1f6f755abac052e896d14502e24f747619c3359b5bcbc77e6ccc0", "name": "lab02star-20261028-bec2ca-backend-1", "image_id": "sha256:d855c32c2cdca54699a9e2678a7fa5487f1ee6c9bdc73d968671ca44c5fe5161", "restart_count": 0, "limits": {"NanoCpus": 500000000, "Memory": 134217728, "MemorySwap": 536870912}, "state": {"Status": "running", "Running": true, "Paused": false, "Restarting": false, "OOMKilled": false, "Dead": false, "Pid": 41466, "ExitCode": 0, "Error": "", "StartedAt": "2026-10-28T16:23:17.610818634Z", "FinishedAt": "0001-01-01T00:00:00Z", "Health": {"Status": "healthy", "FailingStreak": 0, "Log": [{"Start": "2026-10-28T16:23:43.999938174Z", "End": "2026-10-28T16:23:45.012750549Z", "ExitCode": 0, "Output": ""}, {"Start": "2026-10-28T16:23:55.013312054Z", "End": "2026-10-28T16:23:56.18947643Z", "ExitCode": 0, "Output": ""}, {"Start": "2026-10-28T16:24:06.190310712Z", "End": "2026-10-28T16:24:07.209404337Z", "ExitCode": 0, "Output": ""}, {"Start": "2026-10-28T16:24:17.210080175Z", "End": "2026-10-28T16:24:18.307506426Z", "ExitCode": 0, "Output": ""}, {"Start": "2026-10-28T16:24:28.30856625Z", "End": "2026-10-28T16:24:29.196281209Z", "ExitCode": 0, "Output": ""}]}}}, "health_after": {"http_status": 200, "body": {"database": "ok", "status": "ok"}}, "phase": "working-128m-60s", "recorded_at_utc": "2026-10-28T16:24:31.963576+00:00"}], "compose_file": "labs/lab-02-star/experiment.compose.yaml", "backend_id": "lab02-star-control-lab02star-20261028-bec2ca", "git_head": "58f9afb0c66a51aa97e596c85ae14bb163742afe", "source_state": "Resource runner and experiment Compose have uncommitted corrections; the source snapshot is included with this evidence.", "frontend_loopback_port": 55507, "initial_container_ids": {"db": "61303fdacc56ff4f6e8a47168b68ed45417d3cb671d015eeefef888b90c324c8", "backend": "cb15df2e20dc6d295d2573f0ac74909b8185a9d03f97be72cf0b77a0c41d9134", "frontend": "59ddb0e823f34c454dfc99e1c267602022dc8e800100b74b82a92cac0a4c074a"}, "initial_postgres_volume": {"name": "lab02star-20261028-bec2ca_postgres_data", "driver": "local", "created_at": "2026-10-28T16:19:55Z", "labels": {"com.docker.compose.config-hash": "a5c5ebd861a928a0a077257562a6ceff8277470996f7258c3649be56b0f633b3", "com.docker.compose.project": "lab02star-20261028-bec2ca", "com.docker.compose.version": "5.4.0", "com.docker.compose.volume": "postgres_data"}}, "built_images": {"backend": "sha256:d855c32c2cdca54699a9e2678a7fa5487f1ee6c9bdc73d968671ca44c5fe5161|[\"clouds-lab02-star-backend@sha256:d855c32c2cdca54699a9e2678a7fa5487f1ee6c9bdc73d968671ca44c5fe5161\"]", "frontend": "sha256:6e72cccb8bcdf19936842f3bbdaeff83dc8687e93a3a166842745be8cd7c4912|[\"clouds-lab02-star-frontend@sha256:6e72cccb8bcdf19936842f3bbdaeff83dc8687e93a3a166842745be8cd7c4912\"]"}, "seed_rows": 4000, "seed_title_length": 200, "seed_verification": {"http_status": 200, "rows": 4001, "control_task_present": true}, "working_limit_passed": "128m", "final_container_ids_before_cleanup": {"db": "61303fdacc56ff4f6e8a47168b68ed45417d3cb671d015eeefef888b90c324c8", "backend": "6f3bb09f61a1f6f755abac052e896d14502e24f747619c3359b5bcbc77e6ccc0", "frontend": "ada8c27d25febebba7417333166ca4aa73163ccb83b2843c2f601ce89fae6967"}, "final_postgres_volume_before_cleanup": {"name": "lab02star-20261028-bec2ca_postgres_data", "driver": "local", "created_at": "2026-10-28T16:19:55Z", "labels": {"com.docker.compose.config-hash": "a5c5ebd861a928a0a077257562a6ceff8277470996f7258c3649be56b0f633b3", "com.docker.compose.project": "lab02star-20261028-bec2ca", "com.docker.compose.version": "5.4.0", "com.docker.compose.volume": "postgres_data"}}, "postgres_container_unchanged": true, "postgres_volume_unchanged": true, "control_task_verified_after_phases": true, "control_task_final_read": {"created_at": "2026-10-28T16:20:09.960713+00:00", "id": 1, "title": "lab02-star-control-lab02star-20261028-bec2ca"}, "finished_at_utc": "2026-10-28T16:24:36.055067+00:00", "main_container_ids_before": {"cloud-labs-frontend-1": "40f25a0d0e980245066b2f688bb17a9fcda2433d9b01517a15bfd1769e0c986b", "cloud-labs-backend-1": "e6b5d7eea7b436d484e4fdbd54160066a3907143253637c2a7f55f89f2fe7caa", "cloud-labs-backend2-1": "645ca7e5e74d0818a2b9487ef36e79840c88991da3b6522e3ec2b5e26ab8f70c", "cloud-labs-db-1": "adf28f460596f58a385e6e57a33de42877f5d7c06c0fc9d496190a4566d14324", "lab4-postgres": "b9ebb11338ca9fae609c7abbb359cc1f5921912c23a8ad4390a71ff94a9f01a8"}, "main_container_ids_after": {"cloud-labs-frontend-1": "40f25a0d0e980245066b2f688bb17a9fcda2433d9b01517a15bfd1769e0c986b", "cloud-labs-backend-1": "e6b5d7eea7b436d484e4fdbd54160066a3907143253637c2a7f55f89f2fe7caa", "cloud-labs-backend2-1": "645ca7e5e74d0818a2b9487ef36e79840c88991da3b6522e3ec2b5e26ab8f70c", "cloud-labs-db-1": "adf28f460596f58a385e6e57a33de42877f5d7c06c0fc9d496190a4566d14324", "lab4-postgres": "b9ebb11338ca9fae609c7abbb359cc1f5921912c23a8ad4390a71ff94a9f01a8"}, "main_container_ids_unchanged": true, "experiment_volume_removed": true, "experiment_images_removed": true, "experiment_containers_removed": true, "experiment_networks_removed": true, "baseline_resource_metrics": {"db": {"samples": 5, "peak_cpu_percent": 18.66, "idle_memory_mib": 25.74, "peak_memory_mib": 37.54, "memory_growth_mib": 11.8}, "backend": {"samples": 5, "peak_cpu_percent": 50.26, "idle_memory_mib": 42.55, "peak_memory_mib": 76.78, "memory_growth_mib": 34.23}, "frontend": {"samples": 5, "peak_cpu_percent": 5.08, "idle_memory_mib": 11.66, "peak_memory_mib": 13.65, "memory_growth_mib": 1.99}}, "highest_baseline_cpu_service": "backend", "highest_baseline_memory_growth_service": "backend", "acceptance_failures": [], "accepted": true}

@@ -1,0 +1,2 @@
+backend: sha256:d855c32c2cdca54699a9e2678a7fa5487f1ee6c9bdc73d968671ca44c5fe5161|["clouds-lab02-star-backend@sha256:d855c32c2cdca54699a9e2678a7fa5487f1ee6c9bdc73d968671ca44c5fe5161"]
+frontend: sha256:6e72cccb8bcdf19936842f3bbdaeff83dc8687e93a3a166842745be8cd7c4912|["clouds-lab02-star-frontend@sha256:6e72cccb8bcdf19936842f3bbdaeff83dc8687e93a3a166842745be8cd7c4912"]
